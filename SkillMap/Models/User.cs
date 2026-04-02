@@ -30,6 +30,7 @@ namespace SkillMap.Models
 
         // Отдел
         public string Department { get; set; } = string.Empty;
+
         // Роль. Employee, Manager, HR
         public string Role {  get; set; } = string.Empty;
 

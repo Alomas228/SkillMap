@@ -15,6 +15,7 @@ namespace SkillMap.Controllers
         {
             ViewBag.UserName = User.Identity.Name;
             ViewBag.UserRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+     
             return View();
         }
 

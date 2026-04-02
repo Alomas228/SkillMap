@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SkillMap.Data;
@@ -19,6 +20,7 @@ namespace SkillMap.Controllers
             _context = context;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Login(string returnUrl = "/")
         {
@@ -28,6 +30,7 @@ namespace SkillMap.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> TestDb()
         {
@@ -35,6 +38,7 @@ namespace SkillMap.Controllers
             return Ok(users.Select(u => new { u.Email, u.PasswordHash }));
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = "/")
         {
@@ -53,7 +57,7 @@ namespace SkillMap.Controllers
             Console.WriteLine($"Trying to login with email: {model.Email}");
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == model.Email && u.PasswordHash == model.Password);
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower() && u.PasswordHash == model.Password);
 
             if (user == null)
             {
@@ -69,7 +73,9 @@ namespace SkillMap.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Role, user.Role),
+
+                
             };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -95,6 +101,7 @@ namespace SkillMap.Controllers
             return RedirectToAction("Login");
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult ForgotPassword()
         {
