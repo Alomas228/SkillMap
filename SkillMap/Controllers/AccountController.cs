@@ -90,6 +90,52 @@ namespace SkillMap.Controllers
 
         [Authorize(Roles = "HR")]
         [HttpGet]
+        public IActionResult CreateUser()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "HR")]
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(CreateUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model); 
+            }
+
+            // Проверка на существование пользователя
+            var existingUser = await _context.Users
+              .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower());
+
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "Пользователь с таким email уже существует");
+                return View(model);
+            }
+
+            // Создаем нового пользователя
+
+            var user = new User
+            {
+                PublicId = Guid.NewGuid(),
+                Email = model.Email.ToLower(),
+                PasswordHash = _passwordHasher.HashPassword(model.Password),
+                FullName = model.FullName,
+                Position = model.Position ?? "",
+                Department = model.Department ?? "",
+                Role = model.Role
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccesMessage"] = $"Пользватель {user.FullName} успешно создан!";
+            return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize(Roles = "HR")]
+        [HttpGet]
         public IActionResult HashPassword(string password)
         {
             var hash = _passwordHasher.HashPassword(password);
@@ -119,7 +165,6 @@ namespace SkillMap.Controllers
             foreach (var user in users)
             {
                 // Проверяем, является ли пароль уже хешем BCrypt
-                // BCrypt хеши всегда начинаются с "$2"
                 if (!user.PasswordHash.StartsWith("$2"))
                 {
                     // Хешируем текущий пароль (который хранится в открытом виде)

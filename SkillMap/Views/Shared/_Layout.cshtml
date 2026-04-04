@@ -245,6 +245,11 @@
         <a href="/Profile/Index">Мой профиль</a>
     }
 
+    @if (User.IsInRole("HR"))
+    {
+        <a href="/Account/CreateUser">➕ Создать пользователя</a>
+    }
+
     <!-- Боковая панель (для руководителей и HR) -->
     @if (User.Identity.IsAuthenticated && (User.IsInRole("Manager") || User.IsInRole("HR")))
     {

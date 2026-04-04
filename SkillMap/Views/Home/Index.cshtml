@@ -2,8 +2,112 @@
     ViewData["Title"] = "Главная";
 }
 
-<h1>Добро пожаловать, @ViewBag.UserName!</h1>
-<p>Ваша роль: @ViewBag.UserRole</p>
-<p>Вы успешно вошли в систему!</p>
+<div class="welcome-container">
+    <h1>Добро пожаловать, @ViewBag.UserName!</h1>
+    
+    <div class="role-card">
+        <p>Ваша роль: <strong>@ViewBag.UserRole</strong></p>
+    </div>
+    
+    <div class="info-section">
+        <h2>SkillMap - Карта компетенций вашей компании</h2>
+        <p>Здесь вы можете управлять своими навыками, смотреть матрицу компетенций и находить экспертов.</p>
+    </div>
+    
+    <div class="quick-links">
+        <a href="/Profile/Index" class="link-card">
+            <div class="icon">👤</div>
+            <h3>Мой профиль</h3>
+            <p>Просмотр и редактирование навыков</p>
+        </a>
+        
+        <a href="/Search/WhoToAsk" class="link-card">
+            <div class="icon">🔍</div>
+            <h3>Кого спросить?</h3>
+            <p>Поиск экспертов по навыкам</p>
+        </a>
+        
+        @if (User.IsInRole("Manager") || User.IsInRole("HR"))
+        {
+            <a href="/Competencies/Matrix" class="link-card">
+                <div class="icon">📊</div>
+                <h3>Матрица компетенций</h3>
+                <p>Просмотр навыков команды</p>
+            </a>
+        }
+        
+        @if (User.IsInRole("HR"))
+        {
+            <a href="/Account/CreateUser" class="link-card">
+                <div class="icon">➕</div>
+                <h3>Создать пользователя</h3>
+                <p>Добавление новых сотрудников</p>
+            </a>
+        }
+    </div>
+</div>
 
-<a href="/Account/Logout">Выйти</a>
+<style>
+    .welcome-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+    
+    h1 {
+        color: #2c7da0;
+        margin-bottom: 20px;
+    }
+    
+    .role-card {
+        background: #e8f4f8;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    
+    .info-section {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .quick-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .link-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        text-decoration: none;
+        color: #333;
+        text-align: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+    
+    .icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+    
+    .link-card h3 {
+        color: #2c7da0;
+        margin-bottom: 10px;
+    }
+    
+    .link-card p {
+        color: #666;
+        font-size: 14px;
+    }
+</style>
