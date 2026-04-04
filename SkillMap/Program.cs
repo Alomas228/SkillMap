@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using SkillMap.Data;
+using SkillMap.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,10 @@ builder.Services.AddControllersWithViews(options =>
 
     options.Filters.Add(new AuthorizeFilter(policy));
 });
+
+// Регистрация сервиса хэширования паролей
+builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+
 
 var app = builder.Build();
 
