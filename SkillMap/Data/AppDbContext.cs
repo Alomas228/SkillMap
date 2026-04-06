@@ -10,21 +10,23 @@ namespace SkillMap.Data
         { }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Skill> Skills { get; set; }
+        public DbSet<UserSkill> UserSkills { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // base.OnModelCreating(modelBuilder); // Пока закомментируем
+
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            // Временно удалите или закомментируйте HasData
-            /*
-            modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Email = "ivanov@company.com", ... }
-            );
-            */
+            // У одного пользователя не может быть дважды один навык
+            modelBuilder.Entity<UserSkill>()
+                .HasIndex(us => new { us.UserId, us.SkillId })
+                .IsUnique();
+
         }
     }
 }

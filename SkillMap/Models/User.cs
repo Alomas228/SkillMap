@@ -34,5 +34,7 @@ namespace SkillMap.Models
         // Роль. Employee, Manager, HR
         public string Role {  get; set; } = string.Empty;
 
+        public virtual ICollection<UserSkill> UserSkills { get; set; } = new List<UserSkill>();
+
     }
 }

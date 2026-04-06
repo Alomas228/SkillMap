@@ -20,7 +20,7 @@ namespace SkillMap.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search = "")
         {
             // Получаем ID текущего пользователя
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -38,22 +38,33 @@ namespace SkillMap.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Здесь позже будут навыки пользователя
-            // Пока заглушка
+            // Получаем навыки пользователя
+            var userSkills = await _context.UserSkills
+                .Include(us => us.Skill)
+                .Where(us => us.UserId == userId)
+                .ToListAsync();
+
+            // Фильтр по поиску
+            if (!string.IsNullOrEmpty(search))
+            {
+                userSkills = userSkills.Where(us => us.Skill != null && us.Skill.Name.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // Статистика по уровням
+            ViewBag.TotalSkills = userSkills.Count;
+            ViewBag.SeniorCount = userSkills.Count(us => us.Level == "Senior");
+            ViewBag.MiddleCount = userSkills.Count(us => us.Level == "Middle");
+            ViewBag.JuniorCount = userSkills.Count(us => us.Level == "Junior");
+            ViewBag.InternCount = userSkills.Count(us => us.Level == "Intern");
+
+            
+            // Информация о сотруднике
             ViewBag.UserName = user.FullName;
             ViewBag.UserPosition = user.Position;
             ViewBag.UserDepartment = user.Department;
             ViewBag.UserRole = user.Role;
 
-            // Статистика навыков (позже добавим)
-            ViewBag.TotalSkills = 0;
-            ViewBag.ExpertCount = 0;
-            ViewBag.AdvancedCount = 0;
-            ViewBag.IntermediateCount = 0;
-            ViewBag.BeginnerCount = 0;
-
-            // Список навыков (позже добавим)
-            ViewBag.UserSkills = new List<dynamic>();
+            ViewBag.UserSkills = userSkills;
 
             return View();
         }

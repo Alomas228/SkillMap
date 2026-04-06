@@ -1,16 +1,16 @@
-﻿@model SkillMap.Models.LoginViewModel
-
-@{
+﻿@{
+    Layout = "_LoginLayout";
     ViewData["Title"] = "Вход в SkillMap";
 }
 
+@model SkillMap.Models.LoginViewModel
+
 <div class="login-container">
     <div class="login-card">
-        <img src="/images/logo.svg" alt="SkillMap" class="logo" />
+        <img src="/images/logo.svg" alt="SkillMap" class="logo" onerror="this.style.display='none'">
 
         <form asp-action="Login" method="post">
-            <!-- Область для вывода общих ошибок -->
-            
+            <div asp-validation-summary="ModelOnly" class="error-message" role="alert"></div>
             
             <div class="form-group">
                 <input asp-for="Email" class="form-control" placeholder="Корпоративная почта" />
@@ -21,8 +21,6 @@
                 <input asp-for="Password" class="form-control" placeholder="Пароль" />
                 <span asp-validation-for="Password" class="field-error"></span>
             </div>
-
-            <div asp-validation-summary="ModelOnly" class="error-message" role="alert"></div>
 
             <button type="submit" class="btn-login">Войти</button>
         </form>
@@ -46,6 +44,8 @@
         align-items: center;
         height: 100vh;
         background: #f5f7fa;
+        margin: 0;
+        padding: 0;
     }
 
     .login-card {
@@ -75,11 +75,11 @@
         font-size: 14px;
     }
 
-    .form-control:focus {
-        outline: none;
-        border-color: #2c7da0;
-        box-shadow: 0 0 0 3px rgba(44,125,160,0.1);
-    }
+        .form-control:focus {
+            outline: none;
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 3px rgba(44,125,160,0.1);
+        }
 
     .btn-login {
         width: 100%;
@@ -94,9 +94,9 @@
         font-size: 16px;
     }
 
-    .btn-login:hover {
-        background: #1f5e7a;
-    }
+        .btn-login:hover {
+            background: #1f5e7a;
+        }
 
     .btn-google {
         width: 100%;
@@ -109,9 +109,9 @@
         font-size: 14px;
     }
 
-    .btn-google:hover {
-        background: #f5f5f5;
-    }
+        .btn-google:hover {
+            background: #f5f5f5;
+        }
 
     .login-footer {
         margin-top: 25px;
@@ -119,16 +119,15 @@
         color: #666;
     }
 
-    .login-footer a {
-        color: #2c7da0;
-        text-decoration: none;
-    }
+        .login-footer a {
+            color: #2c7da0;
+            text-decoration: none;
+        }
 
-    .login-footer a:hover {
-        text-decoration: underline;
-    }
+            .login-footer a:hover {
+                text-decoration: underline;
+            }
 
-    /* Стили для ошибок */
     .error-message {
         background: #fee2e2;
         border: 1px solid #fecaca;
@@ -145,10 +144,5 @@
         font-size: 12px;
         display: block;
         margin-top: 5px;
-    }
-
-    .validation-summary-errors ul {
-        margin: 0;
-        padding-left: 20px;
     }
 </style>
