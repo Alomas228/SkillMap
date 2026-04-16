@@ -1,11 +1,10 @@
-// src/pages/login.js
 import yandexIcon from "../assets/photo-yandex.png";
 
 function initLoginForm() {
     const form = document.getElementById('login-form');
     if (!form) return;
     
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => { 
         e.preventDefault();
         
         const emailInput = form.querySelector('input[type="email"]');
@@ -24,35 +23,77 @@ function initLoginForm() {
             hasError = true;
         }
         
-        // Проверка пароля (не пустой и минимум 4 символа)
-        if (!password || password.length < 4) {
+        // Проверка пароля (не пустой и минимум 3 символа)
+        if (!password || password.length < 3) {
             showError(passwordInput, '• Неверная почта или пароль');
             hasError = true;
         }
         
+        // Если есть ошибки - не отправляем
+        if (hasError) return;
+        
+        try {
+            const response = await fetch('/Account/Login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    rememberMe: false
+                })
+            });
+            
+            if (response.redirected) {
+                // Если сервер вернул редирект - переходим по нему
+                window.location.href = response.url;
+            } else if (!response.ok) {
+                // Если ошибка - показываем сообщение
+                const errorData = await response.json();
+                showGeneralError(form, errorData.message || 'Неверная почта или пароль');
+            } else {
+                // Если успех, но нет редиректа - идём на главную
+                window.location.href = '/Home/Index';
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showGeneralError(form, 'Ошибка соединения с сервером');
+        }
+        // ======================================
     });
 }
 
-// Показать ошибку для конкретного поля
-function showError(inputElement, message) {
-    // Добавляем класс красной рамки
-    inputElement.classList.add('error');
+// Функция для общей ошибки
+function showGeneralError(form, message) {
+    // Удаляем старую общую ошибку
+    const oldError = form.querySelector('.general-error');
+    if (oldError) oldError.remove();
     
-    // Удаляем старое сообщение, если оно уже есть
+    // Создаём новую
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message general-error';
+    errorDiv.style.marginBottom = '15px';
+    errorDiv.style.textAlign = 'center';
+    errorDiv.textContent = message;
+    
+    // Вставляем в начало формы
+    form.insertBefore(errorDiv, form.firstChild);
+}
+
+function showError(inputElement, message) {
+    inputElement.classList.add('error');
     const parent = inputElement.parentElement;
-    const oldMessage = parent?.querySelector('.error-message');
+    const oldMessage = parent?.querySelector('.error-message:not(.general-error)');
     if (oldMessage) oldMessage.remove();
     
-    // Создаём элемент сообщения
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-message';
     errorDiv.textContent = message;
-    
-    // Вставляем после input
     inputElement.insertAdjacentElement('afterend', errorDiv);
 }
 
-// Удалить все ошибки в форме
 function removeErrors(form) {
     const errorInputs = form.querySelectorAll('.error');
     errorInputs.forEach(input => input.classList.remove('error'));

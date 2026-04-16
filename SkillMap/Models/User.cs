@@ -19,13 +19,11 @@ namespace SkillMap.Models
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string PasswordHash { get; set; } = string.Empty; // затычка под хеш
+        public string PasswordHash { get; set; } = string.Empty;
 
         // ФИО
         public string FullName { get; set; } = string.Empty;
 
-        // Должность
-        // TODO: В следующей итерации заменить на отдельную таблицу UserPositions
         public string Position { get; set; } = string.Empty;
 
         // Отдел
