@@ -1,5 +1,7 @@
-
-body {
+body{
+  margin: 0;
+}
+.main-container {
   margin: 0;
   color: #535353;
   background: #F2F5FF;
@@ -8,6 +10,7 @@ body {
   align-items: center;
   height: 100vh;
 }
+
 
 /* контейнер */
 .auth-container {
@@ -167,14 +170,6 @@ box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 .info-auth a {
   color: #709FFA;
 }
-
-
-
-
-
-
-
-
 
 
 

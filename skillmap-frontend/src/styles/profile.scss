@@ -1,0 +1,924 @@
+// src/styles/profile.scss
+body{
+    background: #F2F5FF;
+    min-height: 100vh;
+}
+.modal,
+.modal *,
+.modal-content,
+.dropdown-item,
+.dropdown-item.logout,
+.modal-content * {
+    font-family: 'Cabin', sans-serif !important;
+}
+.main-container-profile {
+    margin: 0;
+    color: #090909;
+    background: #F2F5FF;
+    font-family: 'Cabin', sans-serif;
+    min-height: 100vh;
+}
+
+/* ХЕДЕР - лого и навигация слева, аватар справа */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 30vh;
+    flex-shrink: 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    background: #FFFFFF;
+    padding: 8px 40px;
+    border-radius: 21px;
+    margin: 14px;
+    gap: 5vh;
+}
+.container-avatar{
+    display: flex;
+    align-items: center;
+    
+}
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Amiko', sans-serif;
+    background: linear-gradient(90deg, #39376C, #ab4ad5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    margin: 0;
+}
+nav{
+    display: contents;
+}
+nav a {
+    text-decoration: none;
+    color: #444;
+    padding: 8px 80px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    margin: 0;
+        display: flex;
+    flex-wrap: nowrap;  /* запрещает перенос flex-элементов */
+    white-space: nowrap;
+}
+
+nav a:hover {
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+    color: #709FFA;
+}
+
+
+nav a:first-child {
+    margin-left: 0;
+}
+
+/* Аватар - отдельно справа */
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #C02BFF;
+    background-image: url('https://ui-avatars.com/api/?background=C02BFF&color=fff&name=Дарья+Федорова');
+    background-size: cover;
+    box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
+}
+.arrow-icon{
+        width: 25px;
+    height: 25px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    object-fit: contain;
+    margin-left: 22px;
+}
+
+/* LAYOUT */
+.container {
+    display: flex;
+    gap: 50px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+     flex: 1;  /* ← занимает всё свободное место */
+    min-height: 0;
+}
+
+/* PROFILE */
+.profile-card {
+    width: 300px;
+    height: 450px;;
+    background: #ffffff;
+    border: 1px;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
+    color: #535353;
+}
+.fio{
+font-size: 20px;
+color: #535353;
+
+}
+
+.profile-img {
+    height: 100px;
+    width: 100px;
+    border-radius: 14%;
+    margin-bottom: 10px;
+}
+
+/* CONTENT */
+.content {
+    flex: 1;
+    min-height: 0;  /* ← важно для внутренней прокрутки */
+    overflow-y: auto;
+    
+}
+
+
+/* BUTTON */
+.add-btn {
+    float: right;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    background: #F6E1FF;
+    cursor: pointer;
+    margin-bottom: 20px;
+    box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+}
+.add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 33px;
+    padding: 10px 24px;
+    
+    .plus-icon {
+        width: 14px;
+        height: 14px;
+    }
+    
+}
+
+/* SKILLS */
+.skills {
+    clear: both;
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.skills-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.skills-header input {
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+/* TABLE */
+.skills-table .row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 150px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.tag {
+    background-color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 15px;
+    text-align: center;
+    width: fit-content;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .header-left {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .container {
+        flex-direction: column;
+    }
+    
+    .stats {
+        width: auto;
+    }
+}
+// src/styles/profile.scss - добавьте в конец файла
+
+/* Стили для таблицы навыков */
+
+
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    
+    &.show {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        max-width: 90%;
+        animation: slideIn 0.3s ease;
+        
+        .modal-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 25px;
+            
+            h3 {
+                margin: 0;
+                color: #333;
+            }
+            
+            }
+        }
+        
+        form {
+            padding: 25px;
+            padding-top: 0px;
+              .form-group {
+                margin-bottom: 20px;
+
+                label {
+                    display: block;
+                    margin-bottom: 8px;
+                    font-weight: 500;
+                    color: #555;
+                }
+                
+                input, select {
+                    width: 100%;
+                    padding: 12px;
+                    border: 1px solid #ddd;
+                    border-radius: 10px;
+                    font-size: 14px;
+                    box-sizing: border-box;
+                    &:focus {
+                        outline: none;
+                        border-color: #A1A1A1;
+                    }
+                }
+            }
+            
+            .form-buttons {
+                display: flex;
+                gap: 23px;
+                justify-content: center;
+                margin-top: 20px;
+                
+                button {
+                    padding: 15px 55px;
+                    border-radius: 10px;
+                    cursor: pointer;
+                    font-size: 14px;
+
+                }
+                
+                .btn-cancel {
+                    background: #ffffff;
+                    border: 1px solid #A1A1A1;
+                    box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.2);
+                    &:hover {
+                        background: #e0e0e0;
+                    }
+                }
+                
+                .btn-submit {
+                    background: #C02BFF;
+                    color: white;
+                    border: none;
+                    box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.2);
+                    &:hover {
+                        background: #a020d0;
+                    }
+                }
+            }
+        }
+    }
+
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+
+
+/* ========== ВЫПАДАЮЩЕЕ МЕНЮ ========== */
+.arrow-wrapper {
+    position: relative;
+}
+
+.arrow-icon {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    object-fit: contain;
+    margin-left: 22px;
+}
+
+.arrow-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Выпадающее меню */
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 222px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 8px 10px 3px 0px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    width: auto;
+}
+
+/* Шапка меню */
+.dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 17px;
+        width: fit-content;
+}
+
+.dropdown-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #C02BFF;
+    background-image: url('https://ui-avatars.com/api/?background=C02BFF&color=fff&name=Дарья+Федорова');
+    background-size: cover;
+    box-shadow: 1px 5px 3px rgba(0, 0, 0, 0.2)
+}
+
+.dropdown-info {
+    flex: 1;
+}
+
+.dropdown-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+        flex-wrap: nowrap;  /* запрещает перенос flex-элементов */
+    white-space: nowrap;
+}
+
+.dropdown-role {
+    font-size: 12px;
+    color: #888;
+}
+
+
+
+.dropdown-item.logout {
+    margin: 21px 17px 21px 17px;
+        width: stretch;
+        box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.2);
+    
+    &:hover {
+        background: #f5f5f5;
+    }
+}
+/* Иконки в выпадающем меню */
+.dropdown-item {
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: none;
+    border: 1px ;
+    cursor: pointer;
+    font-size: 11px;
+    color: #535353;
+    transition: 0.2s;
+    text-align: left;
+border: 1px solid #53535329;
+border-radius: 10px;
+        display: flex;
+    flex-wrap: nowrap;  /* запрещает перенос flex-элементов */
+    white-space: nowrap;
+    margin: 17px;
+    margin-top: 5px;
+    box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.2);
+    width: stretch;
+    
+    &:hover {
+        background: #f5f5f5;
+    }
+    
+    .dropdown-icon {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* СТАТИСТИКА С КРУЖКАМИ */
+.stats {
+    background: white;
+    padding: 20px;
+    border-radius: 21px;
+    width: 250px;
+    box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
+}
+
+.stat-total {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    color: #535353;
+    
+    .stat-icon {
+        font-size: 20px;
+    }
+    
+    strong {
+        font-size: 16px;
+        color: #535353;
+        
+        span {
+            color: #C02BFF;
+            font-size: 18px;
+        }
+    }
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    gap: 12px;
+    
+    .stat-circle {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    
+    .stat-label {
+        flex: 1;
+        font-size: 14px;
+        color: #555;
+    }
+    
+    .stat-count {
+        font-weight: 600;
+        font-size: 16px;
+        color: #535353;
+    }
+    
+    /* Эксперт - фиолетовый */
+    &.expert {
+        .stat-circle {
+            background: #F2ACAC85;
+        }
+    }
+    
+    /* Продвинутый - зелёный */
+    &.advanced {
+        .stat-circle {
+            background: #EDC9AD9E;
+
+        }
+    }
+    
+    /* Опытный - оранжевый */
+    &.experienced {
+        .stat-circle {
+            background: #F4F3B59E;
+        }
+    }
+    
+    /* Новичок - серый */
+    &.novice {
+        .stat-circle {
+            background: #C0E6BC8C;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Стили для блока навыков с поиском и фильтром */
+.skills-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: nowrap;
+    gap: 20px;
+    min-width: 900px;
+}
+
+.skills-title-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    
+    h3 {
+        margin: 0;
+        font-size: 20px;
+        color: #333;
+        white-space: nowrap;
+    }
+}
+
+.search-toggle-btn {
+    background: none;
+    border: 1px solid #A1A1A1;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 3px;
+    transition: transform 0.2s;
+    margin-left: 30px;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #A1A1A1;
+    border-radius: 20px;
+    width: 500px;
+    font-size: 14px;
+    transition: all 0.3s;
+    
+    &.hidden {
+        display: none;
+    }
+    
+    &:focus {
+        outline: none;
+        border-color: #A1A1A1;
+    }
+}
+
+.filter-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+    
+    .filter-label {
+        font-size: 14px;
+        color: #555;
+        white-space: nowrap;
+    }
+    
+    .filter-select {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+        
+        &:focus {
+            outline: none;
+            border-color: #A1A1A1;
+        }
+    }
+}
+
+/* Таблица навыков */
+.skills-table-container {
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 16px;
+    
+    /* Стилизация скроллбара */
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: #C02BFF;
+        border-radius: 3px;
+    }
+}
+
+.skills-table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    thead tr {
+        border-radius: 12px;
+        position: inherit;
+        top: 0;
+        z-index: 10;
+        
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 400;
+            color: #535353;
+            font-size: 15px;
+                text-decoration: underline;
+        }
+    }
+    
+    tbody tr {
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s;
+        
+        &:hover {
+            background: #fafafa;
+        }
+    }
+    
+    td {
+        padding: 14px 16px;
+        vertical-align: middle;
+    }
+    
+    .skill-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        
+        .skill-circle {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .skill-name-text {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .skill-subcategory {
+            font-size: 12px;
+            color: #888;
+            font-weight: normal;
+            margin-left: 5px;
+            
+        }
+    }
+    
+    .level-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 500;
+    background: white;      /* ← белый фон */
+    color: #333;            /* ← тёмный текст */
+    border: 1px solid #A1A1A1;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .actions-cell {
+        display: flex;
+        gap: 8px;
+        white-space: nowrap;
+        
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            
+            &:hover {
+                background: #f0f0f0;
+            }
+        }
+        
+        .edit-skill {
+            color: #4CAF50;
+        }
+        
+        .delete-skill {
+            color: #f44336;
+        }
+    }
+}
+
+.empty-row {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}
