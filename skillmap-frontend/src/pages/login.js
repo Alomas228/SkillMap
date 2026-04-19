@@ -1,4 +1,3 @@
-// src/pages/login.js
 import yandexIcon from "../assets/photo-yandex.png";
 import API_CONFIG from "../config.js"; 
 
@@ -25,49 +24,72 @@ function initLoginForm() {
             hasError = true;
         }
         
-        // Проверка пароля (не пустой и минимум 4 символа)
-        if (!password || password.length < 4) {
+        // Проверка пароля (не пустой и минимум 3 символа)
+        if (!password || password.length < 3) {
             showError(passwordInput, 'Неверная почта или пароль');
             hasError = true;
         }
         
-        if (!hasError) {
-            // ← ИСПОЛЬЗУЕМ API_CONFIG вместо прямого URL
-            try {
-                const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.AUTH.LOGIN}`, {
-                    method: 'POST',
-                    headers: API_CONFIG.HEADERS,
-                    body: JSON.stringify({ email, password }),
-                });
-                
+        // Если есть ошибки - не отправляем
+        if (hasError) return;
+        
+        try {
+            // Используем API_CONFIG из config.js
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.AUTH.LOGIN}`, {
+                method: 'POST',
+                headers: API_CONFIG.HEADERS,
+                credentials: 'include',
+                body: JSON.stringify({ email, password }),
+            });
+            
+            if (response.redirected) {
+                // Если сервер вернул редирект - переходим по нему
+                window.location.href = response.url;
+            } else if (response.ok) {
                 const data = await response.json();
+                console.log('Успешный вход:', data);
                 
-                if (response.ok) {
-                    console.log('Успешный вход:', data);
-                    // Сохраняем токен
-                    if (data.token) {
-                        localStorage.setItem('token', data.token);
-                    }
-                    // Перенаправляем на страницу профиля
-                    window.location.href = '/profile';
-                } else {
-                    showError(emailInput, data.message || 'Неверная почта или пароль');
-                    showError(passwordInput, data.message || 'Неверная почта или пароль');
+                // Сохраняем токен если есть
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
                 }
-            } catch (error) {
-                console.error('Ошибка запроса:', error);
-                showError(emailInput, 'Ошибка сервера. Попробуйте позже');
+                
+                // Перенаправляем на страницу профиля
+                window.location.href = '/profile';
+            } else {
+                // Если ошибка - показываем сообщение
+                const errorData = await response.json();
+                showGeneralError(form, errorData.message || 'Неверная почта или пароль');
             }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showGeneralError(form, 'Ошибка соединения с сервером');
         }
     });
 }
 
-// Показать ошибку для конкретного поля
+// Функция для общей ошибки
+function showGeneralError(form, message) {
+    // Удаляем старую общую ошибку
+    const oldError = form.querySelector('.general-error');
+    if (oldError) oldError.remove();
+    
+    // Создаём новую
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message general-error';
+    errorDiv.style.marginBottom = '15px';
+    errorDiv.style.textAlign = 'center';
+    errorDiv.textContent = message;
+    
+    // Вставляем в начало формы
+    form.insertBefore(errorDiv, form.firstChild);
+}
+
 function showError(inputElement, message) {
     inputElement.classList.add('error');
     
     const parent = inputElement.parentElement;
-    const oldMessage = parent?.querySelector('.error-message');
+    const oldMessage = parent?.querySelector('.error-message:not(.general-error)');
     if (oldMessage) oldMessage.remove();
     
     const errorDiv = document.createElement('div');
@@ -77,7 +99,6 @@ function showError(inputElement, message) {
     inputElement.insertAdjacentElement('afterend', errorDiv);
 }
 
-// Удалить все ошибки в форме
 function removeErrors(form) {
     const errorInputs = form.querySelectorAll('.error');
     errorInputs.forEach(input => input.classList.remove('error'));

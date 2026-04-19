@@ -7,8 +7,6 @@ using SkillMap.Data;
 using SkillMap.Models;
 using SkillMap.Services;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Principal;
 
 namespace SkillMap.Controllers
 {
@@ -36,14 +34,14 @@ namespace SkillMap.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = "/")
+        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            Console.WriteLine($"Trying to login with email: {model?.Email}");
 
-            Console.WriteLine($"Trying to login with email: {model.Email}");
+            if (model == null || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
+            {
+                return BadRequest(new { success = false, message = "Email и пароль обязательны" });
+            }
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower());
@@ -51,20 +49,16 @@ namespace SkillMap.Controllers
             if (user == null)
             {
                 Console.WriteLine($"User not found: {model.Email}");
-                ModelState.AddModelError("", "Неверная почта или пароль");
-                return View(model);
+                return Unauthorized(new { success = false, message = "Неверная почта или пароль" });
             }
 
-            // Проверка пароля
             var isValid = _passwordHasher.VerifyPassword(model.Password, user.PasswordHash);
             Console.WriteLine($"Password valid: {isValid}");
 
             if (!isValid)
             {
-                ModelState.AddModelError("", "Неверная почта или пароль");
-                return View(model);
+                return Unauthorized(new { success = false, message = "Неверная почта или пароль" });
             }
-
 
             var claims = new List<Claim>
             {
@@ -85,7 +79,9 @@ namespace SkillMap.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
 
-            return RedirectToAction("Index", "Home");
+            Console.WriteLine($"User {user.Email} successfully logged in");
+
+            return Ok(new { success = true, redirectUrl = "/Home/Index" });
         }
 
         [Authorize(Roles = "HR")]
@@ -145,7 +141,7 @@ namespace SkillMap.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login");
+            return Redirect("/index.html");
         }
 
         [AllowAnonymous]
@@ -155,46 +151,5 @@ namespace SkillMap.Controllers
             return View();
         }
 
-        [AllowAnonymous]
-        [HttpGet]
-        public async Task<IActionResult> MigratePasswords()
-        {
-            var users = await _context.Users.ToListAsync();
-            int updatedCount = 0;
-
-            foreach (var user in users)
-            {
-                // Проверяем, является ли пароль уже хешем BCrypt
-                if (!user.PasswordHash.StartsWith("$2"))
-                {
-                    // Хешируем текущий пароль (который хранится в открытом виде)
-                    var hashedPassword = _passwordHasher.HashPassword(user.PasswordHash);
-                    user.PasswordHash = hashedPassword;
-                    updatedCount++;
-                    Console.WriteLine($"Migrated password for user: {user.Email}");
-                }
-            }
-
-            await _context.SaveChangesAsync();
-            return Ok($"Мигрировано паролей: {updatedCount} из {users.Count} пользователей");
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
-        public IActionResult TestBcrypt()
-        {
-            var hash = "$2a$12$uDVF1sP0LxBVFtbVAfF03.tJTFh1VrsT0zX3/.ZtKyTkJgtrbCoJa";
-            var password = "111";
-
-            var isValid = BCrypt.Net.BCrypt.Verify(password, hash);
-
-            return Ok(new
-            {
-                hash,
-                password,
-                isValid,
-                message = isValid ? "Пароль верный" : "Пароль неверный"
-            });
-        }
     }
 }
