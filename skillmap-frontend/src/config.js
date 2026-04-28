@@ -1,38 +1,39 @@
 // src/config.js
 
 const API_CONFIG = {
-    // Базовый URL бэкенда (замените на реальный, когда даст бекендер)
-    BASE_URL: 'https://localhost:7020',
-    
-    // Эндпоинты для авторизации
+    // Лучше оставить пустым.
+    // Тогда запросы идут на тот же домен:
+    // /api/auth/login, /api/me/dashboard и т.д.
+    BASE_URL: "",
+
     AUTH: {
-        LOGIN: '/auth/login',
-        LOGOUT: '/auth/logout',
-        REGISTER: '/auth/register',
-        REFRESH: '/auth/refresh',
+        LOGIN: "/api/auth/login",
+        LOGOUT: "/api/auth/logout",
+        ME: "/api/auth/me",
     },
-    
-    // Эндпоинты для пользователей
+
+    ME: {
+        DASHBOARD: "/api/me/dashboard",
+        SKILLS: "/api/me/skills",
+    },
+
     USERS: {
-        PROFILE: '/users/profile',
-        UPDATE: '/users/update',
+        LIST: "/api/users",
+        CREATE: "/api/users",
     },
-    
-    // Эндпоинты для навыков
+
     SKILLS: {
-        LIST: '/skills',
-        CREATE: '/skills/create',
-        UPDATE: '/skills/update',
-        DELETE: '/skills/delete',
+        LIST: "/api/skills",
+        AVAILABLE: "/api/skills/available",
+        CREATE: "/api/skills",
+        ADD_TO_ME: "/api/skills/my",
+        REMOVE_FROM_ME: "/api/skills/my",
+        UPDATE_MY_LEVEL: "/api/skills/my",
     },
-    
-    // Настройки запросов
+
     HEADERS: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
     },
-    
-    // Таймаут запроса (в миллисекундах)
-    TIMEOUT: 10000,
 };
 
 export default API_CONFIG;

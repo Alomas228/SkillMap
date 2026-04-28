@@ -199,9 +199,16 @@ function initMatrixPage() {
     }
     
     if (logoutBtn) {
-        logoutBtn.addEventListener("click", function() {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
+        logoutBtn.addEventListener("click", async function() {
+            try {
+                await fetch("/api/auth/logout", {
+                    method: "POST",
+                    credentials: "include",
+                });
+            } catch (error) {
+                console.error("Ошибка выхода:", error);
+            }
+
             window.location.href = "/";
         });
     }

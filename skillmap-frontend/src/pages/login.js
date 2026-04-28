@@ -41,23 +41,19 @@ function initLoginForm() {
                 credentials: 'include',
                 body: JSON.stringify({ email, password }),
             });
-            
+
             if (response.redirected) {
-                // Если сервер вернул редирект - переходим по нему
                 window.location.href = response.url;
             } else if (response.ok) {
                 const data = await response.json();
                 console.log('Успешный вход:', data);
                 
-                // Сохраняем токен если есть
                 if (data.token) {
                     localStorage.setItem('token', data.token);
                 }
                 
-                // Перенаправляем на страницу профиля
                 window.location.href = '/profile';
             } else {
-                // Если ошибка - показываем сообщение
                 const errorData = await response.json();
                 showGeneralError(form, errorData.message || 'Неверная почта или пароль');
             }
