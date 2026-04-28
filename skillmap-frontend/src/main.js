@@ -1,8 +1,9 @@
-
-import { renderProfilePage } from "./pages/profile.js";
+// src/main.js
+import { renderMatrixPage } from "./pages/matrix.js";
 import "./styles/main.scss";
 import "./styles/profile.scss";
+import "./styles/matrix.scss";
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderProfilePage();
+    renderMatrixPage();  // ← сразу показывает матрицу
 });

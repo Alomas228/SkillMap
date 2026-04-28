@@ -7,6 +7,7 @@ import plusIcon from "../assets/plus.svg";
 import searchIcon from "../assets/search.svg";
 import trashIcon from "../assets/trash.svg";
 import editIcon from "../assets/edit.svg";
+import API_CONFIG from "../config.js";
 
 export function renderProfilePage() {
     const app = document.getElementById("app");
