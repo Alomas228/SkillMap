@@ -1,9 +1,6 @@
 // src/config.js
 
 const API_CONFIG = {
-    // Лучше оставить пустым.
-    // Тогда запросы идут на тот же домен:
-    // /api/auth/login, /api/me/dashboard и т.д.
     BASE_URL: "",
 
     AUTH: {
@@ -15,6 +12,10 @@ const API_CONFIG = {
     ME: {
         DASHBOARD: "/api/me/dashboard",
         SKILLS: "/api/me/skills",
+    },
+
+    MATRIX: {
+        GET: "/api/matrix",
     },
 
     USERS: {
