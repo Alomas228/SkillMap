@@ -121,11 +121,151 @@
     padding: 0px 20px;
     white-space: nowrap;
 }
+/* ТОП-10 НАВЫКОВ - ГОРИЗОНТАЛЬНЫЕ ШКАЛЫ */
+.hr-top-skills {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
+    
+    h3 {
+        margin: 0 0 15px 0;
+        font-size: 18px;
+        color: #333;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+}
+
+.hr-top-skills-list {
+    max-height: 400px;
+    overflow-y: auto;
+    text-align: center;
+}
+
+.hr-top-skill-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.hr-top-skill-rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    flex-shrink: 0;
+    min-width: 25px;
+}
+
+.hr-top-skill-info {
+    flex: 1;
+}
+
+.hr-top-skill-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 4px;
+        white-space: nowrap;
+}
+
+.hr-top-skill-bar-container {
+    position: relative;
+    background: #E7E5E5;
+    border-radius: 20px;
+    height: 24px;
+    overflow: hidden;
+    height: 17px;
+}
+
+.hr-top-skill-bar {
+    background: #a9c0ec;
+    height: 100%;
+    transition: width 0.5s ease;
+}
+
+.hr-top-skill-count {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+    z-index: 1;
+}
+/* ТОП-5 РЕДКИХ НАВЫКОВ */
+.hr-rare-skills {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
+    
+    h3 {
+        margin: 0 0 15px 0;
+        font-size: 18px;
+        color: #333;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+}
+
+.hr-rare-skills-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.hr-rare-skill-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e0e0e0;  /* серая линия под каждым навыком */
+    
+    &:last-child {
+        border-bottom: none;  /* у последнего элемента линии нет */
+    }
+}
+
+.hr-rare-skill-rank {
+    width: 28px;
+    height: 28px;
+    background: none;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    color: #e53935;  /* красный цвет для нумерации */
+    flex-shrink: 0;
+}
+
+.hr-rare-skill-info {
+    flex: 1;
+}
+
+.hr-rare-skill-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #535353;
+    margin-bottom: 6px;
+}
+
+
+
 
 /* ВЕРХНЯЯ СТРОКА */
 .hr-top-row {
     display: flex;
-    gap: 30px;
+gap: 50px;
     margin-bottom: 40px;
 }
 
@@ -149,41 +289,49 @@
     color: #333;
     padding-bottom: 10px;
     border-bottom: 2px solid #f0f0f0;
+    text-align: center;
 }
 
 .hr-list {
     margin: 0;
     padding-left: 20px;
 }
-
+.hr-gap-item{
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+.hr-gap-item:last-child {
+    border-bottom: none;
+}
 .hr-list li {
     margin-bottom: 8px;
-    color: #555;
     font-size: 14px;
 }
 
 .hr-gap-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
 }
 
 .hr-gap-name {
-    font-weight: 600;
-    color: #333;
+    font-weight: 500;
+    color: #535353;
     margin-bottom: 5px;
+    font-size: 16px;
+    white-space: nowrap;
 }
 
 .hr-gap-stats {
     display: flex;
     gap: 15px;
-    font-size: 12px;
-    color: #666;
+    font-size: 15px;
+    color: #807979;
     margin-bottom: 5px;
 }
 
 .hr-gap-deficit {
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 500;
 }
 
@@ -199,6 +347,7 @@
     box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
     width: 320px;
     flex-shrink: 0;
+    align-self: flex-start;
 }
 
 .hr-filter-text {
@@ -214,24 +363,33 @@
 .hr-filter-item {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 50px;
     margin-bottom: 15px;
 }
 
 .hr-filter-item label {
     font-size: 14px;
     color: #555;
-    min-width: 120px;
+    min-width: 130px;
+        white-space: nowrap;
+
 }
 
 .hr-filter-item select {
     flex: 1;
     padding: 8px 12px;
-    border-radius: 10px;
+    border-radius: 100px;
     border: 1px solid #ccc;
     font-size: 14px;
-}
+    max-width: 120px;
 
+}
+#dep{
+    min-width: auto;
+}
+#departmentFilterHr{
+    min-width: max-content;
+}
 .hr-buttons {
     display: flex;
     gap: 14px;
@@ -294,6 +452,10 @@
 .hr-matrix-actions {
     display: flex;
     gap: 15px;
+        display: flex;
+    flex-direction: column;  /* ← вертикальное расположение */
+    gap: 12px;  
+    max-height: 149px; 
 }
 
 .hr-btn-outline {
@@ -304,6 +466,7 @@
     background: #C02BFF;
     color: white;
     border: none;
+    width: 100%; 
     box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.2);
 }
 
@@ -312,9 +475,7 @@
 }
 
 .hr-matrix-filter {
-    margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
     display: flex;
     align-items: center;
     gap: 15px;
@@ -329,11 +490,14 @@
 .hr-filter-select {
     padding: 8px 12px;
     border: 1px solid #ddd;
-    border-radius: 10px;
+    border-radius: 20px;
     font-size: 14px;
     background: white;
     cursor: pointer;
     min-width: 180px;
+}
+.with-buttons{
+    display: flex;
 }
 
 .hr-matrix-table {
@@ -345,16 +509,24 @@
 .hr-matrix-table td {
     padding: 12px 16px;
     text-align: center;
-    border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #ccc;
+
+}
+
+.hr-matrix-table tr:last-child {
+
+        border-bottom: none;
+
 }
 
 .hr-matrix-table th {
-    background: #f8f9fa;
-    font-weight: 500;
-    color: #535353;
     font-size: 16px;
-}
+        border-bottom: 3px solid #A1A1A1;
 
+}
+.hr-matrix-table-container{
+        max-width: 800px;
+}
 .hr-employee-col,
 .hr-employee-name {
     text-align: left;
@@ -472,4 +644,107 @@
     .hr-top-row { flex-direction: column; }
     .hr-filters-block { width: 100%; }
     .hr-blocks { grid-template-columns: 1fr; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* КОНТЕЙНЕР С МАТРИЦЕЙ И КНОПКАМИ РЯДОМ */
+.with-buttons {
+    display: flex;
+    gap: 30px;
+    margin-top: 30px;
+    align-items: flex-start; 
+    align-items: anchor-center; /* кнопки по верхнему краю матрицы */
+}
+
+.hr-matrix-section {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
+    flex: 1;                  /* матрица занимает всё свободное место */
+    min-width: 0;             /* предотвращает переполнение */
+}
+
+.hr-matrix-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 180px;             /* фиксированная ширина для кнопок */
+    flex-shrink: 0; 
+    border: 1px solid #A1A1A1;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.hr-btn-outline {
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 14px;
+    background: #C02BFF;
+    color: white;
+    border: none;
+    box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.hr-btn-outline:hover {
+    background: #a020d0;
+    transform: translateY(-2px);
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .with-buttons {
+        flex-direction: column;
+    }
+    
+    .hr-matrix-actions {
+        width: 100%;
+        flex-direction: row;   /* на мобильных кнопки могут быть в ряд */
+    }
+    
+    .hr-btn-outline {
+        flex: 1;
+    }
 }

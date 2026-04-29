@@ -72,36 +72,36 @@ export function renderHrPage() {
                 <!-- 4 блока в ряд -->
                 <div class="hr-top-row">
                     <div class="hr-blocks">
-                        <div class="hr-block">
-                            <h3>Топ-10 навыков компании</h3>
-                            <ol class="hr-list">
-                                <li>Языки программирования</li><li>Базы данных</li><li>Анализ данных</li>
-                                <li>IaC</li><li>Облачная инфраструктура</li><li>Python</li>
-                                <li>Python</li><li>Python</li><li>Python</li><li>Python</li>
-                            </ol>
+                        <div class="hr-block hr-top-skills">
+                        <!-- Топ-10 навыков компании -->
+    <h3>Топ-10 навыков компании</h3>
+    <div class="hr-top-skills-list" id="topSkillsList">
+        <!-- данные загрузятся через JS -->
+    </div>
+
                         </div>
-                        <div class="hr-block">
-                            <h3>Топ-5 редких навыков</h3>
-                            <ol class="hr-list">
-                                <li>Инструменты тестирования</li><li>BI-инструменты</li>
-                                <li>Облачная инфраструктура</li><li>IaC</li><li>Операционные системы</li>
-                            </ol>
-                        </div>
+<!-- Топ-5 редких навыков -->
+<div class="hr-block hr-rare-skills">
+    <h3>Топ-5 редких навыков</h3>
+    <div class="hr-rare-skills-list" id="rareSkillsList">
+        <!-- данные загрузятся через JS -->
+    </div>
+</div>
                         <div class="hr-block">
                             <h3>Навыки с разрывом</h3>
                             <div class="hr-gap-list">
                                 <div class="hr-gap-item">
-                                    <div class="hr-gap-name">BI-инструменты</div>
+                                    <div class="hr-gap-name">⚠️BI-инструменты</div>
                                     <div class="hr-gap-stats"><span>Новичков: 33</span><span>Эксперт: 2</span></div>
                                     <div class="hr-gap-deficit high">Дефицит: высокий</div>
                                 </div>
                                 <div class="hr-gap-item">
-                                    <div class="hr-gap-name">Мониторинг</div>
+                                    <div class="hr-gap-name">⚠️ Мониторинг</div>
                                     <div class="hr-gap-stats"><span>Новичков: 21</span><span>Эксперт: 9</span></div>
                                     <div class="hr-gap-deficit high">Дефицит: высокий</div>
                                 </div>
                                 <div class="hr-gap-item">
-                                    <div class="hr-gap-name">IaC</div>
+                                    <div class="hr-gap-name">⚠️ IaC</div>
                                     <div class="hr-gap-stats"><span>Новичков: 27</span><span>Эксперт: 14</span></div>
                                     <div class="hr-gap-deficit medium">Дефицит: средний</div>
                                 </div>
@@ -113,7 +113,7 @@ export function renderHrPage() {
                     <div class="hr-filters-block">
                         <div class="hr-filter-text">Фильтры</div>
                         <div class="hr-filter-item">
-                            <label>Отдел:</label>
+                            <label id="dep">Отдел:</label>
                             <select id="departmentFilterHr">
                                 <option value="all">Все</option>
                                 <option value="backend">Backend-разработка</option>
@@ -154,16 +154,13 @@ export function renderHrPage() {
                 </div>
 
                 <!-- Матрица компетенций по отделам -->
+                <div class="with-buttons">
                 <div class="hr-matrix-section">
                     <div class="hr-matrix-header">
                         <h3>Матрица компетенций по отделам:</h3>
-                        <div class="hr-matrix-actions">
-                            <button class="hr-btn-outline" id="exportReportBtn">Экспорт отчета</button>
-                            <button class="hr-btn-outline" id="createSurveyBtn">Создать опрос</button>
-                        </div>
-                    </div>
+                    
                     <div class="hr-matrix-filter">
-                        <span class="hr-filter-label">Фильтр по навыкам:</span>
+                        <span class="hr-filter-label">Навык:</span>
                         <select id="skillMatrixFilter" class="hr-filter-select">
                             <option value="all">Все навыки</option>
                             <option value="python">Python</option>
@@ -171,6 +168,7 @@ export function renderHrPage() {
                             <option value="csharp">C#</option>
                             <option value="golang">Golang</option>
                         </select>
+                    </div>
                     </div>
                     <div class="hr-matrix-table-container">
                         <table class="hr-matrix-table" id="departmentMatrixTable">
@@ -185,15 +183,41 @@ export function renderHrPage() {
                             </thead>
                             <tbody id="departmentMatrixBody"></tbody>
                         </table>
+                        
                     </div>
                 </div>
+                    <div class="hr-matrix-actions">
+                            <button class="hr-btn-outline" id="exportReportBtn">Экспорт отчета</button>
+                            <button class="hr-btn-outline" id="createSurveyBtn">Создать опрос</button>
+                    </div>
+                    </div>
             </main>
         </div>
     `;
     
     initHrPage();
 }
-
+// Данные для топ-5 редких навыков
+const rareSkillsData = [
+    { name: "Инструменты тестирования", count: 12 },
+    { name: "BI-инструменты", count: 18 },
+    { name: "Облачная инфраструктура", count: 24 },
+    { name: "IaC", count: 31 },
+    { name: "Операционные системы", count: 37 }
+];
+// Данные для топ-10 навыков (название и количество)
+const topSkillsData = [
+    { name: "Языки программирования", count: 89, percentage: 89 },
+    { name: "Базы данных", count: 76, percentage: 76 },
+    { name: "Анализ данных", count: 65, percentage: 73 },
+    { name: "IaC", count: 54, percentage: 54 },
+    { name: "Облачная инфраструктура", count: 48, percentage: 48 },
+    { name: "Python", count: 42, percentage: 42 },
+    { name: "Git", count: 38, percentage: 38 },
+    { name: "Docker", count: 35, percentage: 35 },
+    { name: "Kubernetes", count: 31, percentage: 31 },
+    { name: "PostgreSQL", count: 28, percentage: 28 }
+];
 // Данные для матрицы по отделам
 const departmentMatrixData = [
     { name: "Backend-разработка", skills: { python: "expert", kotlin: "advanced", csharp: "expert", golang: "advanced" } },
@@ -236,6 +260,51 @@ function initHrPage() {
             window.navigateTo('/');
         });
     }
+    // ========== ТОП-10 НАВЫКОВ (горизонтальные шкалы) ==========
+function renderTopSkills() {
+    const container = document.getElementById("topSkillsList");
+    if (!container) return;
+    
+    let html = "";
+    for (let i = 0; i < topSkillsData.length; i++) {
+        const skill = topSkillsData[i];
+        const barWidth = skill.percentage;
+        html += `
+            <div class="hr-top-skill-item">
+                <div class="hr-top-skill-rank">${i + 1 + "."}</div>
+                <div class="hr-top-skill-info">
+                    <div class="hr-top-skill-bar-container">
+                        <div class="hr-top-skill-bar" style="width: ${barWidth}%">
+                            <div class="hr-top-skill-name">${skill.name}</div>
+                        </div>
+                        <span class="hr-top-skill-count">${skill.count}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+}
+// ========== ТОП-5 РЕДКИХ НАВЫКОВ ==========
+function renderRareSkills() {
+    const container = document.getElementById("rareSkillsList");
+    if (!container) return;
+    
+    let html = "";
+    for (let i = 0; i < rareSkillsData.length; i++) {
+        const skill = rareSkillsData[i];
+        html += `
+            <div class="hr-rare-skill-item">
+                <div class="hr-rare-skill-rank">${i + 1}</div>
+                <div class="hr-rare-skill-info">
+                    <div class="hr-rare-skill-name">${skill.name}</div>
+                    <div class="hr-rare-skill-line"></div>
+                </div>
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+}
     
     // ========== ОТРИСОВКА КВАДРАТИКОВ ==========
     function renderSkillSquare(level) {
@@ -270,6 +339,8 @@ function initHrPage() {
     }
     
     renderDepartmentMatrix();
+    renderTopSkills();
+    renderRareSkills();
     
     // ========== ФИЛЬТРЫ ==========
     const applyBtn = document.getElementById("applyFiltersHr");
