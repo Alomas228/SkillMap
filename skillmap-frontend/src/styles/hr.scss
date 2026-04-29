@@ -1,8 +1,6 @@
-// src/styles/matrix.scss
-body{
-    background: #F2F5FF;
-}
-.matrix-page {
+// src/styles/hr.scss
+
+.hr-page {
     margin: 0;
     color: #090909;
     background: #F2F5FF;
@@ -10,16 +8,14 @@ body{
     min-height: 100vh;
 }
 
-/* ХЕДЕР */
-
-.matrix-header {
+.hr-header {
     display: flex;
     align-items: center;
     gap: 30vh;
     flex-shrink: 0;
 }
 
-.matrix-header-left {
+.hr-header-left {
     display: flex;
     align-items: center;
     background: #FFFFFF;
@@ -29,7 +25,7 @@ body{
     gap: 5vh;
 }
 
-.matrix-logo {
+.hr-logo {
     font-size: 24px;
     font-weight: bold;
     font-family: 'Amiko', sans-serif;
@@ -41,11 +37,11 @@ body{
     margin: 0;
 }
 
-.matrix-nav {
+.hr-nav {
     display: contents;
 }
 
-.matrix-nav a {
+.hr-nav a {
     text-decoration: none;
     color: #444;
     padding: 8px 80px;
@@ -57,17 +53,17 @@ body{
     white-space: nowrap;
 }
 
-.matrix-nav a:hover {
+.hr-nav a:hover {
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
     color: #709FFA;
 }
 
-.matrix-container-avatar {
+.hr-container-avatar {
     display: flex;
     align-items: center;
 }
 
-.matrix-avatar {
+.hr-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -77,7 +73,7 @@ body{
     box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
 }
 
-.matrix-arrow-icon {
+.hr-arrow-icon {
     width: 25px;
     height: 25px;
     cursor: pointer;
@@ -87,29 +83,21 @@ body{
 }
 
 
-.matrix-main {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-
-/* ОСНОВНОЙ КОНТЕНТ */
-.matrix-main {
+.hr-main {
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
 }
 
 /* КАРТОЧКИ СТАТИСТИКИ */
-.matrix-stats-cards {
+.hr-stats-cards {
     display: flex;
     gap: 30px;
     margin-bottom: 30px;
     max-width: 1000px;
 }
 
-.matrix-stat-card {
+.hr-stat-card {
     background: white;
     border-radius: 21px;
     display: flex;
@@ -119,118 +107,196 @@ body{
     padding: 10px 20px;
 }
 
-.matrix-stat-card .matrix-stat-icon {
-    width: 40px;
-    height: 40px;
-}
-
-.matrix-stat-card .matrix-stat-value {
+.hr-stat-card .hr-stat-value {
     font-size: 26px;
     font-weight: 500;
     color: #535353;
 }
 
-.matrix-stat-card .matrix-stat-label {
+.hr-stat-card .hr-stat-label {
     font-size: 16px;
     color: #000000;
     margin-top: 8px;
     font-weight: 500;
     padding: 0px 20px;
+    white-space: nowrap;
 }
 
-/* ТОП СЕКЦИЯ */
-.matrix-top-section {
+/* ВЕРХНЯЯ СТРОКА */
+.hr-top-row {
     display: flex;
-    gap: 42px;
-    margin: 30px 15vh;
+    gap: 30px;
+    margin-bottom: 40px;
 }
 
-.matrix-chart-card {
-    background: #ffffff;
-    padding: 30px;
+.hr-blocks {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    flex: 1;
+}
+
+.hr-block {
+    background: white;
     border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    padding: 20px;
+    box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
 }
 
-.matrix-all-emp {
-    font-size: 20px;
-    font-weight: 700;
-    color: #535353;
+.hr-block h3 {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    color: #333;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
 }
 
-.matrix-chart-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 90px;
-    padding-top: 40px;
+.hr-list {
+    margin: 0;
+    padding-left: 20px;
 }
 
-#levelsChart {
-    width: 200px !important;
-    height: 200px !important;
+.hr-list li {
+    margin-bottom: 8px;
+    color: #555;
+    font-size: 14px;
 }
 
-.matrix-chart-legend div {
-    margin-bottom: 10px;
-    font-size: 15px;
-    color: #535353;
-}
-
-.matrix-dot {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-right: 8px;
-}
-
-.matrix-dot.expert { background: #F2ACAC; }
-.matrix-dot.advanced { background: #EDC9AD; }
-.matrix-dot.experienced { background: #F4F3B5; }
-.matrix-dot.novice { background: #C0E6BC; }
-
-/* ФИЛЬТРЫ */
-.matrix-filters-card {
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    width: 350px;
+.hr-gap-list {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 15px;
 }
 
-.matrix-filter-text {
+.hr-gap-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.hr-gap-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.hr-gap-deficit {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.hr-gap-deficit.high { color: #f44336; }
+.hr-gap-deficit.medium { color: #FF9800; }
+.hr-gap-deficit.low { color: #4CAF50; }
+
+/* ФИЛЬТРЫ */
+.hr-filters-block {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
+    width: 320px;
+    flex-shrink: 0;
+}
+
+.hr-filter-text {
     max-width: fit-content;
     border: 1px solid #A1A1A1;
     font-size: 16px;
-    padding: 5px;
+    padding: 5px 15px;
     border-radius: 10px;
     color: #535353;
+    margin-bottom: 15px;
 }
 
-.matrix-departament {
-    align-items: center;
+.hr-filter-item {
     display: flex;
-    gap: 20px;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
 }
 
-.matrix-filters-card input,
-.matrix-filters-card select {
-    padding: 8px;
+.hr-filter-item label {
+    font-size: 14px;
+    color: #555;
+    min-width: 120px;
+}
+
+.hr-filter-item select {
+    flex: 1;
+    padding: 8px 12px;
     border-radius: 10px;
     border: 1px solid #ccc;
-    width: stretch;
+    font-size: 14px;
 }
 
-.matrix-buttons {
+.hr-buttons {
     display: flex;
     gap: 14px;
-    padding: 10px 30px;
+    margin-top: 20px;
 }
 
-.matrix-buttons button:first-child {
+.hr-buttons button {
+    flex: 1;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.hr-buttons button:first-child {
+    background: #C02BFF;
+    color: white;
+    border: none;
+    box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.2);
+}
+
+.hr-buttons button:first-child:hover {
+    background: #a020d0;
+}
+
+.hr-buttons button:last-child {
+    background: #ffffff;
+    border: 1px solid #A1A1A1;
+    box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.2);
+}
+
+.hr-buttons button:last-child:hover {
+    background: #e0e0e0;
+}
+
+/* МАТРИЦА */
+.hr-matrix-section {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
+    margin-top: 30px;
+}
+
+.hr-matrix-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.hr-matrix-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.hr-matrix-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.hr-btn-outline {
     cursor: pointer;
     border-radius: 10px;
     padding: 10px 30px;
@@ -241,62 +307,26 @@ body{
     box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.2);
 }
 
-.matrix-buttons button:first-child:hover {
+.hr-btn-outline:hover {
     background: #a020d0;
 }
 
-.matrix-buttons button:last-child {
-    cursor: pointer;
-    padding: 10px 30px;
-    border-radius: 10px;
-    font-size: 14px;
-    background: #ffffff;
-    border: 1px solid #A1A1A1;
-    box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.2);
-}
-
-.matrix-buttons button:last-child:hover {
-    background: #e0e0e0;
-}
-
-/* МАТРИЦА КОМПЕТЕНЦИЙ */
-.matrix-section {
-    background: white;
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.2);
-    margin: 30px 15vh;
-    position: relative;
-}
-
-.matrix-table-header {
+.hr-matrix-filter {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
     gap: 15px;
-    margin: 10px;
 }
 
-.matrix-table-header h3 {
-    margin: 0;
-    font-size: 18px;
-    color: #333;
-}
-
-.matrix-filter-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.matrix-filter-label {
+.hr-filter-label {
     font-size: 14px;
     color: #555;
     font-weight: 500;
 }
 
-.matrix-filter-select {
+.hr-filter-select {
     padding: 8px 12px;
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -306,57 +336,46 @@ body{
     min-width: 180px;
 }
 
-.matrix-table-container {
-    overflow-x: auto;
-}
-
-.matrix-table {
+.hr-matrix-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px;
 }
 
-.matrix-table th,
-.matrix-table td {
+.hr-matrix-table th,
+.hr-matrix-table td {
     padding: 12px 16px;
     text-align: center;
     border-bottom: 1px solid #eee;
 }
 
-.matrix-table th {
-    border-bottom: 3px solid #A1A1A1;
+.hr-matrix-table th {
+    background: #f8f9fa;
     font-weight: 500;
     color: #535353;
     font-size: 16px;
 }
 
-.matrix-employee-col,
-.matrix-employee-name {
+.hr-employee-col,
+.hr-employee-name {
     text-align: left;
-    font-weight: 500;
-    color: #333;
 }
 
-.matrix-skill-cell {
-    text-align: center;
-}
-
-.matrix-skill-square {
+.hr-skill-square {
     width: 98px;
     height: 24px;
     display: inline-block;
 }
 
-.matrix-skill-square.empty {
+.hr-skill-square.empty {
     border: 1px solid #ccc;
 }
 
 /* ВЫПАДАЮЩЕЕ МЕНЮ */
-.matrix-arrow-wrapper {
+.hr-arrow-wrapper {
     position: relative;
 }
 
-.matrix-dropdown-menu {
+.hr-dropdown-menu {
     position: absolute;
     top: 50px;
     right: 0;
@@ -371,14 +390,14 @@ body{
     z-index: 1000;
 }
 
-.matrix-dropdown-menu.show {
+.hr-dropdown-menu.show {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
     width: auto;
 }
 
-.matrix-dropdown-header {
+.hr-dropdown-header {
     display: flex;
     align-items: center;
     gap: 22px;
@@ -386,33 +405,33 @@ body{
     width: fit-content;
 }
 
-.matrix-dropdown-avatar {
+.hr-dropdown-avatar {
     width: 48px;
     height: 48px;
     border-radius: 50%;
     background: #C02BFF;
-    background-image: url('https://ui-avatars.com/api/?background=C02BFF&color=fff&name=Руководитель');
+    background-image: url('https://ui-avatars.com/api/?background=C02BFF&color=fff&name=HR');
     background-size: cover;
     box-shadow: 1px 5px 3px rgba(0, 0, 0, 0.2);
 }
 
-.matrix-dropdown-info {
+.hr-dropdown-info {
     flex: 1;
 }
 
-.matrix-dropdown-name {
+.hr-dropdown-name {
     font-weight: 600;
     color: #333;
     margin-bottom: 4px;
     white-space: nowrap;
 }
 
-.matrix-dropdown-role {
+.hr-dropdown-role {
     font-size: 12px;
     color: #888;
 }
 
-.matrix-dropdown-item {
+.hr-dropdown-item {
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
@@ -432,37 +451,25 @@ body{
     width: stretch;
 }
 
-.matrix-dropdown-item:hover {
+.hr-dropdown-item:hover {
     background: #f5f5f5;
 }
 
-.matrix-dropdown-icon {
+.hr-dropdown-icon {
     width: 18px;
     height: 18px;
     object-fit: contain;
 }
 
-.matrix-dropdown-item.matrix-logout {
+.hr-dropdown-item.hr-logout {
     margin: 21px 17px 21px 17px;
 }
 
 @media (max-width: 768px) {
-    .matrix-header {
-        flex-direction: column;
-        gap: 15px;
-    }
-    .matrix-header-left {
-        flex-direction: column;
-        gap: 15px;
-    }
-    .matrix-stats-cards {
-        flex-direction: column;
-    }
-    .matrix-top-section {
-        flex-direction: column;
-        margin: 30px 0;
-    }
-    .matrix-filters-card {
-        width: 100%;
-    }
+    .hr-header { flex-direction: column; gap: 15px; }
+    .hr-header-left { flex-direction: column; gap: 15px; }
+    .hr-stats-cards { flex-direction: column; }
+    .hr-top-row { flex-direction: column; }
+    .hr-filters-block { width: 100%; }
+    .hr-blocks { grid-template-columns: 1fr; }
 }
