@@ -1,45 +1,120 @@
-// src/main.js
-// import { renderPublicProfilePage } from "./pages/public-profile.js";
-// import "./styles/main.scss";
-// import "./styles/profile.scss";
-// import "./styles/matrix.scss";
-// import "./styles/hr.scss";
-// import "./styles/public-profile.scss";
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     renderPublicProfilePage();
-// });// src/main.js
-
 import { renderLoginPage } from "./pages/login.js";
-import { renderProfilePage } from "./pages/profile.js";
 import { renderMatrixPage } from "./pages/matrix.js";
+import { renderProfilePage } from "./pages/profile.js";
 import { renderHrPage } from "./pages/hr.js";
+import { renderPublicProfilePage } from "./pages/public-profile.js";
+
 import "./styles/main.scss";
 import "./styles/profile.scss";
 import "./styles/matrix.scss";
 import "./styles/hr.scss";
+import "./styles/public-profile.scss";
 
-function renderPage() {
-    const path = window.location.pathname;
-    
-    if (path === '/profile') {
-        renderProfilePage();
-    } else if (path === '/matrix') {
-        renderMatrixPage();
-    } else if (path === '/login') {
-        renderLoginPage();
-    } else {
-        renderHrPage();
+async function getCurrentUser() {
+    try {
+        const response = await fetch("/api/auth/me", {
+            credentials: "include",
+        });
+
+        if (!response.ok) {
+            return null;
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Ошибка проверки авторизации:", error);
+        return null;
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderPage();
-});
+function normalizeRole(role) {
+    return String(role || "").trim().toLowerCase();
+}
 
-window.addEventListener('popstate', renderPage);
+function redirectByRole(user) {
+    const role = normalizeRole(user?.role);
 
-window.navigateTo = function(path) {
-    window.history.pushState({}, '', path);
-    renderPage();
-};
+    if (role === "employee") {
+        window.location.href = "/profile";
+        return;
+    }
+
+    if (role === "manager") {
+        window.location.href = "/matrix";
+        return;
+    }
+
+    if (role === "hr") {
+        window.location.href = "/hr";
+        return;
+    }
+
+    window.location.href = "/profile";
+}
+
+async function router() {
+    const path = window.location.pathname;
+
+    // Публичный профиль можно показывать отдельно
+    if (path.startsWith("/public-profile")) {
+        renderPublicProfilePage();
+        return;
+    }
+
+    // Страница входа
+    if (path === "/" || path === "/index.html" || path === "/login") {
+        const user = await getCurrentUser();
+
+        if (user) {
+            redirectByRole(user);
+            return;
+        }
+
+        renderLoginPage();
+        return;
+    }
+
+    // Все остальные страницы требуют авторизации
+    const user = await getCurrentUser();
+
+    if (!user) {
+        window.location.href = "/";
+        return;
+    }
+
+    const role = normalizeRole(user.role);
+
+    if (path === "/dashboard") {
+        redirectByRole(user);
+        return;
+    }
+
+    if (path === "/profile") {
+        renderProfilePage();
+        return;
+    }
+
+    if (path === "/matrix") {
+        if (role !== "manager" && role !== "hr") {
+            redirectByRole(user);
+            return;
+        }
+
+        renderMatrixPage();
+        return;
+    }
+
+    if (path === "/hr") {
+        if (role !== "hr") {
+            redirectByRole(user);
+            return;
+        }
+
+        renderHrPage();
+        return;
+    }
+
+    redirectByRole(user);
+}
+
+document.addEventListener("DOMContentLoaded", router);

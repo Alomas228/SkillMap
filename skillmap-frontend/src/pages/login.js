@@ -39,28 +39,50 @@ function initLoginForm() {
                 method: 'POST',
                 headers: API_CONFIG.HEADERS,
                 credentials: 'include',
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({
+                    email,
+                    password,
+                    rememberMe: false,
+                }),
             });
-            
-            if (response.redirected) {
-                // Если сервер вернул редирект - переходим по нему
-                window.location.href = response.url;
-            } else if (response.ok) {
-                const data = await response.json();
-                console.log('Успешный вход:', data);
-                
-                // Сохраняем токен если есть
-                if (data.token) {
-                    localStorage.setItem('token', data.token);
-                }
-                
-                // Перенаправляем на страницу профиля
-                window.location.href = '/profile';
-            } else {
-                // Если ошибка - показываем сообщение
-                const errorData = await response.json();
-                showGeneralError(form, errorData.message || 'Неверная почта или пароль');
+
+            let data = null;
+
+        try {
+            data = await response.json();
+        } catch {
+            data = null;
+        }
+
+        if (response.ok) {
+            console.log("Успешный вход:", data);
+
+            const role = String(data?.user?.role || "").trim().toLowerCase();
+
+            if (role === "employee") {
+                window.location.href = "/profile";
+                return;
             }
+
+            if (role === "manager") {
+                window.location.href = "/matrix";
+                return;
+            }
+
+            if (role === "hr") {
+                // Пока HR-страницы нет.
+                // Можешь заменить на "/hr", когда сделаешь HR-страницу.
+                window.location.href = "/matrix";
+                return;
+            }
+
+            window.location.href = "/profile";
+        } else {
+            showGeneralError(
+                form,
+                data?.message || "Неверная почта или пароль"
+            );
+        }
         } catch (error) {
             console.error('Ошибка:', error);
             showGeneralError(form, 'Ошибка соединения с сервером');
