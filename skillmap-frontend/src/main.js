@@ -1,4 +1,15 @@
 // src/main.js
+// import { renderPublicProfilePage } from "./pages/public-profile.js";
+// import "./styles/main.scss";
+// import "./styles/profile.scss";
+// import "./styles/matrix.scss";
+// import "./styles/hr.scss";
+// import "./styles/public-profile.scss";
+
+// document.addEventListener('DOMContentLoaded', () => {
+//     renderPublicProfilePage();
+// });// src/main.js
+
 import { renderLoginPage } from "./pages/login.js";
 import { renderProfilePage } from "./pages/profile.js";
 import { renderMatrixPage } from "./pages/matrix.js";
