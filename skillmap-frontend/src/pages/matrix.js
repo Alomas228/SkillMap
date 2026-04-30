@@ -21,6 +21,7 @@ let matrixData = {
     employees: [],
 };
 
+let currentUser = null;
 let currentDepartment = "all";
 let currentNameSearch = "";
 let currentSkillSearch = "";
@@ -233,8 +234,8 @@ async function initMatrixPage() {
     initNavigation();
     initFilters();
 
-    const user = await getCurrentUser();
-    renderCurrentUser(user);
+    currentUser = await getCurrentUser();
+    renderCurrentUser(currentUser);
 
     await loadMatrixData();
 }
@@ -260,7 +261,12 @@ function initDropdown() {
 
     if (profileBtn) {
         profileBtn.addEventListener("click", function () {
-            window.location.href = "/profile";
+            if (currentUser?.publicId) {
+                window.location.href = `/public-profile/${currentUser.publicId}`;
+                return;
+            }
+
+            window.location.href = "/public-profile";
         });
     }
 

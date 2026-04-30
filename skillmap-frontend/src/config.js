@@ -32,6 +32,10 @@ const API_CONFIG = {
         UPDATE_MY_LEVEL: "/api/skills/my",
     },
 
+    PUBLIC_PROFILES: {
+        GET: "/api/public-profiles",
+    },
+
     HEADERS: {
         "Content-Type": "application/json",
     },

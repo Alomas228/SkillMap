@@ -55,13 +55,6 @@ function redirectByRole(user) {
 async function router() {
     const path = window.location.pathname;
 
-    // Публичный профиль можно показывать отдельно
-    if (path.startsWith("/public-profile")) {
-        renderPublicProfilePage();
-        return;
-    }
-
-    // Страница входа
     if (path === "/" || path === "/index.html" || path === "/login") {
         const user = await getCurrentUser();
 
@@ -74,7 +67,6 @@ async function router() {
         return;
     }
 
-    // Все остальные страницы требуют авторизации
     const user = await getCurrentUser();
 
     if (!user) {
@@ -114,7 +106,18 @@ async function router() {
         return;
     }
 
+    if (path.startsWith("/public-profile") || path.startsWith("/public-profiles")) {
+        renderPublicProfilePage();
+        return;
+    }
+
     redirectByRole(user);
 }
 
+window.navigateTo = function (path) {
+    window.history.pushState({}, "", path);
+    router();
+};
+
+window.addEventListener("popstate", router);
 document.addEventListener("DOMContentLoaded", router);

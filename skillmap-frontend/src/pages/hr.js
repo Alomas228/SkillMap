@@ -1,45 +1,119 @@
-// src/pages/hr.js
 import arrowIcon from "../assets/Icon.svg";
-import avatarIcon from "../assets/icon-avatar.jpg";
 import menuIcon1 from "../assets/image-menu1.svg";
 import menuIcon2 from "../assets/image-menu2.svg";
 import statIcon1 from "../assets/1stat-card.svg";
 import statIconHR2 from "../assets/hr-plus.svg";
 import statIconHR3 from "../assets/active.svg";
+import API_CONFIG from "../config.js";
+
+let currentUser = null;
+let matrixData = {
+    stats: {},
+    departments: [],
+    skills: [],
+    employees: [],
+};
+
+let currentUser = null;
+let currentDepartment = "all";
+let currentCategory = "all";
+let currentLevel = "all";
+let currentSkillId = "all";
+
+const LEVEL_TO_UI = {
+    Senior: "Эксперт",
+    Middle: "Продвинутый",
+    Junior: "Опытный",
+    Intern: "Новичок",
+};
+
+const UI_LEVEL_TO_API = {
+    expert: "Senior",
+    advanced: "Middle",
+    experienced: "Junior",
+    novice: "Intern",
+};
+
+const LEVEL_COLORS = {
+    Senior: "#F2ACAC",
+    Middle: "#EDC9AD",
+    Junior: "#F4F3B5",
+    Intern: "#C0E6BCC7",
+};
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function getAvatarUrl(name) {
+    return `https://ui-avatars.com/api/?background=7c5bb8&color=fff&name=${encodeURIComponent(name || "HR")}`;
+}
+
+async function apiFetch(url, options = {}) {
+    const response = await fetch(`${API_CONFIG.BASE_URL}${url}`, {
+        credentials: "include",
+        ...options,
+        headers: {
+            ...(options.headers || {}),
+        },
+    });
+
+    if (response.status === 401) {
+        window.location.href = "/";
+        return null;
+    }
+
+    if (response.status === 403) {
+        showHrError("У вас нет доступа к HR-панели");
+        return null;
+    }
+
+    return response;
+}
 
 export function renderHrPage() {
     const app = document.getElementById("app");
     if (!app) return;
-    
+
     app.innerHTML = `
         <div class="hr-page">
-            <!-- Хедер -->
             <header class="hr-header">
                 <div class="hr-header-left">
                     <div class="hr-logo">SkillMap</div>
+
                     <nav class="hr-nav">
-                        <a href="#" onclick="event.preventDefault(); window.navigateTo('/'); return false;">Главная</a>
-                        <a href="#" onclick="event.preventDefault(); window.navigateTo('/matrix'); return false;">Матрица компетенций</a>
-                        <a href="#" onclick="event.preventDefault(); window.navigateTo('/profile'); return false;">Кого спросить?</a>
+                        <a href="/hr">Главная</a>
+                        <a href="/matrix">Матрица компетенций</a>
+                        <a href="/profile">Мой профиль</a>
                     </nav>
                 </div>
+
                 <div class="hr-container-avatar">
-                    <div class="hr-avatar"></div>
+                    <div class="hr-avatar" id="hrHeaderAvatar"></div>
+
                     <div class="hr-arrow-wrapper">
                         <img src="${arrowIcon}" alt="Стрелка" class="hr-arrow-icon" id="dropdownArrow">
+
                         <div class="hr-dropdown-menu" id="dropdownMenu">
                             <div class="hr-dropdown-header">
-                                <div class="hr-dropdown-avatar"></div>
+                                <div class="hr-dropdown-avatar" id="hrDropdownAvatar"></div>
+
                                 <div class="hr-dropdown-info">
-                                    <div class="hr-dropdown-name">HR Директор</div>
-                                    <div class="hr-dropdown-role">HR</div>
+                                    <div class="hr-dropdown-name" id="hrDropdownName">Загрузка...</div>
+                                    <div class="hr-dropdown-role" id="hrDropdownRole">HR</div>
                                 </div>
                             </div>
-                            <div class="hr-dropdown-divider"></div>
+
                             <button class="hr-dropdown-item" id="profileBtn">
                                 <img src="${menuIcon1}" alt="Профиль" class="hr-dropdown-icon">
                                 Мой профиль
                             </button>
+
                             <button class="hr-dropdown-item hr-logout" id="logoutBtn">
                                 <img src="${menuIcon2}" alt="Выйти" class="hr-dropdown-icon">
                                 Выйти
@@ -50,92 +124,61 @@ export function renderHrPage() {
             </header>
 
             <main class="hr-main">
-                <!-- Карточки статистики -->
                 <div class="hr-stats-cards">
                     <div class="hr-stat-card">
                         <img src="${statIcon1}" alt="Иконка" class="hr-stat-icon">
                         <div class="hr-stat-label">Сотрудников:</div>
-                        <div class="hr-stat-value">124</div>
+                        <div class="hr-stat-value" id="hrEmployeesCount">0</div>
                     </div>
+
                     <div class="hr-stat-card">
                         <img src="${statIconHR2}" alt="Иконка" class="hr-stat-icon">
                         <div class="hr-stat-label">Навыков в каталоге:</div>
-                        <div class="hr-stat-value">89</div>
+                        <div class="hr-stat-value" id="hrSkillsCount">0</div>
                     </div>
+
                     <div class="hr-stat-card">
                         <img src="${statIconHR3}" alt="Иконка" class="hr-stat-icon">
                         <div class="hr-stat-label">Активных профилей:</div>
-                        <div class="hr-stat-value">98%</div>
+                        <div class="hr-stat-value" id="hrActiveProfiles">0%</div>
                     </div>
                 </div>
 
-                <!-- 4 блока в ряд -->
                 <div class="hr-top-row">
                     <div class="hr-blocks">
                         <div class="hr-block hr-top-skills">
-                        <!-- Топ-10 навыков компании -->
-    <h3>Топ-10 навыков компании</h3>
-    <div class="hr-top-skills-list" id="topSkillsList">
-        <!-- данные загрузятся через JS -->
-    </div>
-
+                            <h3>Топ-10 навыков компании</h3>
+                            <div class="hr-top-skills-list" id="topSkillsList">Загрузка...</div>
                         </div>
-<!-- Топ-5 редких навыков -->
-<div class="hr-block hr-rare-skills">
-    <h3>Топ-5 редких навыков</h3>
-    <div class="hr-rare-skills-list" id="rareSkillsList">
-        <!-- данные загрузятся через JS -->
-    </div>
-</div>
+
+                        <div class="hr-block hr-rare-skills">
+                            <h3>Топ-5 редких навыков</h3>
+                            <div class="hr-rare-skills-list" id="rareSkillsList">Загрузка...</div>
+                        </div>
+
                         <div class="hr-block">
                             <h3>Навыки с разрывом</h3>
-                            <div class="hr-gap-list">
-                                <div class="hr-gap-item">
-                                    <div class="hr-gap-name">⚠️BI-инструменты</div>
-                                    <div class="hr-gap-stats"><span>Новичков: 33</span><span>Эксперт: 2</span></div>
-                                    <div class="hr-gap-deficit high">Дефицит: высокий</div>
-                                </div>
-                                <div class="hr-gap-item">
-                                    <div class="hr-gap-name">⚠️ Мониторинг</div>
-                                    <div class="hr-gap-stats"><span>Новичков: 21</span><span>Эксперт: 9</span></div>
-                                    <div class="hr-gap-deficit high">Дефицит: высокий</div>
-                                </div>
-                                <div class="hr-gap-item">
-                                    <div class="hr-gap-name">⚠️ IaC</div>
-                                    <div class="hr-gap-stats"><span>Новичков: 27</span><span>Эксперт: 14</span></div>
-                                    <div class="hr-gap-deficit medium">Дефицит: средний</div>
-                                </div>
-                            </div>
+                            <div class="hr-gap-list" id="gapSkillsList">Загрузка...</div>
                         </div>
                     </div>
 
-                    <!-- Фильтры -->
                     <div class="hr-filters-block">
                         <div class="hr-filter-text">Фильтры</div>
+
                         <div class="hr-filter-item">
                             <label id="dep">Отдел:</label>
                             <select id="departmentFilterHr">
                                 <option value="all">Все</option>
-                                <option value="backend">Backend-разработка</option>
-                                <option value="frontend">Frontend-разработка</option>
-                                <option value="mobile">Мобильная разработка</option>
-                                <option value="datascience">Data Science / ML / DE</option>
-                                <option value="qa">QA</option>
-                                <option value="analytics">Аналитика</option>
-                                <option value="uiux">UI/UX</option>
-                                <option value="devops">DevOps</option>
                             </select>
                         </div>
+
                         <div class="hr-filter-item">
                             <label>Категория навыков:</label>
                             <select id="categoryFilterHr">
                                 <option value="all">Все</option>
-                                <option value="languages">Языки программирования</option>
-                                <option value="databases">Базы данных</option>
-                                <option value="cloud">Облачные технологии</option>
-                                <option value="testing">Тестирование</option>
                             </select>
                         </div>
+
                         <div class="hr-filter-item">
                             <label>Уровень:</label>
                             <select id="levelFilterHr">
@@ -146,6 +189,7 @@ export function renderHrPage() {
                                 <option value="novice">Новичок</option>
                             </select>
                         </div>
+
                         <div class="hr-buttons">
                             <button id="applyFiltersHr">Применить</button>
                             <button id="resetFiltersHr">Сбросить</button>
@@ -153,225 +197,572 @@ export function renderHrPage() {
                     </div>
                 </div>
 
-                <!-- Матрица компетенций по отделам -->
                 <div class="with-buttons">
-                <div class="hr-matrix-section">
-                    <div class="hr-matrix-header">
-                        <h3>Матрица компетенций по отделам:</h3>
-                    
-                    <div class="hr-matrix-filter">
-                        <span class="hr-filter-label">Навык:</span>
-                        <select id="skillMatrixFilter" class="hr-filter-select">
-                            <option value="all">Все навыки</option>
-                            <option value="python">Python</option>
-                            <option value="kotlin">Kotlin</option>
-                            <option value="csharp">C#</option>
-                            <option value="golang">Golang</option>
-                        </select>
+                    <div class="hr-matrix-section">
+                        <div class="hr-matrix-header">
+                            <h3>Матрица компетенций по отделам:</h3>
+
+                            <div class="hr-matrix-filter">
+                                <span class="hr-filter-label">Навык:</span>
+                                <select id="skillMatrixFilter" class="hr-filter-select">
+                                    <option value="all">Все навыки</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="hr-matrix-table-container">
+                            <table class="hr-matrix-table" id="departmentMatrixTable">
+                                <thead id="departmentMatrixHead">
+                                    <tr>
+                                        <th class="hr-employee-col">Отдел</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="departmentMatrixBody">
+                                    <tr>
+                                        <td>Загрузка...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    </div>
-                    <div class="hr-matrix-table-container">
-                        <table class="hr-matrix-table" id="departmentMatrixTable">
-                            <thead>
-                                <tr>
-                                    <th class="hr-employee-col">Отдел</th>
-                                    <th>Python</th>
-                                    <th>Kotlin</th>
-                                    <th>C#</th>
-                                    <th>Golang</th>
-                                </tr>
-                            </thead>
-                            <tbody id="departmentMatrixBody"></tbody>
-                        </table>
-                        
+
+                    <div class="hr-matrix-actions">
+                        <button class="hr-btn-outline" id="exportReportBtn">Экспорт отчета</button>
+                        <button class="hr-btn-outline" id="createSurveyBtn">Создать опрос</button>
                     </div>
                 </div>
-                    <div class="hr-matrix-actions">
-                            <button class="hr-btn-outline" id="exportReportBtn">Экспорт отчета</button>
-                            <button class="hr-btn-outline" id="createSurveyBtn">Создать опрос</button>
-                    </div>
-                    </div>
             </main>
         </div>
     `;
-    
+
     initHrPage();
 }
-// Данные для топ-5 редких навыков
-const rareSkillsData = [
-    { name: "Инструменты тестирования", count: 12 },
-    { name: "BI-инструменты", count: 18 },
-    { name: "Облачная инфраструктура", count: 24 },
-    { name: "IaC", count: 31 },
-    { name: "Операционные системы", count: 37 }
-];
-// Данные для топ-10 навыков (название и количество)
-const topSkillsData = [
-    { name: "Языки программирования", count: 89, percentage: 89 },
-    { name: "Базы данных", count: 76, percentage: 76 },
-    { name: "Анализ данных", count: 65, percentage: 73 },
-    { name: "IaC", count: 54, percentage: 54 },
-    { name: "Облачная инфраструктура", count: 48, percentage: 48 },
-    { name: "Python", count: 42, percentage: 42 },
-    { name: "Git", count: 38, percentage: 38 },
-    { name: "Docker", count: 35, percentage: 35 },
-    { name: "Kubernetes", count: 31, percentage: 31 },
-    { name: "PostgreSQL", count: 28, percentage: 28 }
-];
-// Данные для матрицы по отделам
-const departmentMatrixData = [
-    { name: "Backend-разработка", skills: { python: "expert", kotlin: "advanced", csharp: "expert", golang: "advanced" } },
-    { name: "Frontend-разработка", skills: { python: "advanced", kotlin: "novice", csharp: "experienced", golang: "novice" } },
-    { name: "Мобильная разработка", skills: { python: "experienced", kotlin: "expert", csharp: "novice", golang: "advanced" } },
-    { name: "Data Science / ML / DE", skills: { python: "expert", kotlin: "novice", csharp: "advanced", golang: "novice" } },
-    { name: "QA", skills: { python: "experienced", kotlin: "novice", csharp: "novice", golang: "novice" } },
-    { name: "Аналитика", skills: { python: "advanced", kotlin: "novice", csharp: "novice", golang: "novice" } },
-    { name: "UI/UX", skills: { python: "novice", kotlin: "novice", csharp: "novice", golang: "novice" } },
-    { name: "DevOps", skills: { python: "expert", kotlin: "advanced", csharp: "expert", golang: "expert" } }
-];
 
-function initHrPage() {
-    // ========== ВЫПАДАЮЩЕЕ МЕНЮ ==========
+async function initHrPage() {
+    initDropdown();
+    initFilters();
+    initActionButtons();
+
+    await loadCurrentUser();
+    await loadMatrixData();
+}
+
+async function loadCurrentUser() {
+    const response = await apiFetch(API_CONFIG.AUTH.ME);
+
+    if (!response || !response.ok) return;
+
+    currentUser = await response.json();
+    renderCurrentUser();
+}
+
+async function loadMatrixData() {
+    const response = await apiFetch(API_CONFIG.MATRIX.GET);
+
+    if (!response) return;
+
+    if (!response.ok) {
+        showHrError("Не удалось загрузить HR-данные");
+        return;
+    }
+
+    matrixData = await response.json();
+
+    matrixData.stats = matrixData.stats || {};
+    matrixData.departments = matrixData.departments || [];
+    matrixData.skills = matrixData.skills || [];
+    matrixData.employees = matrixData.employees || [];
+
+    renderFilters();
+    renderDashboard();
+}
+
+function renderCurrentUser() {
+    const fullName = currentUser?.fullName || "HR";
+    const role = currentUser?.role || "HR";
+    const avatarUrl = getAvatarUrl(fullName);
+
+    const headerAvatar = document.getElementById("hrHeaderAvatar");
+    const dropdownAvatar = document.getElementById("hrDropdownAvatar");
+    const dropdownName = document.getElementById("hrDropdownName");
+    const dropdownRole = document.getElementById("hrDropdownRole");
+
+    if (headerAvatar) {
+        headerAvatar.style.backgroundImage = `url("${avatarUrl}")`;
+        headerAvatar.style.backgroundSize = "cover";
+        headerAvatar.style.backgroundPosition = "center";
+    }
+
+    if (dropdownAvatar) {
+        dropdownAvatar.style.backgroundImage = `url("${avatarUrl}")`;
+        dropdownAvatar.style.backgroundSize = "cover";
+        dropdownAvatar.style.backgroundPosition = "center";
+    }
+
+    if (dropdownName) dropdownName.textContent = fullName;
+    if (dropdownRole) dropdownRole.textContent = role;
+}
+
+function initDropdown() {
     const dropdownArrow = document.getElementById("dropdownArrow");
     const dropdownMenu = document.getElementById("dropdownMenu");
     const profileBtn = document.getElementById("profileBtn");
     const logoutBtn = document.getElementById("logoutBtn");
-    
-    if (dropdownArrow && dropdownMenu) {
-        dropdownArrow.addEventListener("click", function(e) {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle("show");
+
+    dropdownArrow?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        dropdownMenu?.classList.toggle("show");
+    });
+
+    document.addEventListener("click", (event) => {
+        if (
+            dropdownArrow &&
+            dropdownMenu &&
+            !dropdownArrow.contains(event.target) &&
+            !dropdownMenu.contains(event.target)
+        ) {
+            dropdownMenu.classList.remove("show");
+        }
+    });
+
+    profileBtn?.addEventListener("click", () => {
+        if (currentUser?.publicId) {
+            window.location.href = `/public-profile/${currentUser.publicId}`;
+            return;
+        }
+
+        window.location.href = "/public-profile";
+    });
+
+    logoutBtn?.addEventListener("click", async () => {
+        await apiFetch(API_CONFIG.AUTH.LOGOUT, {
+            method: "POST",
         });
-        document.addEventListener("click", function(e) {
-            if (!dropdownArrow.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                dropdownMenu.classList.remove("show");
-            }
+
+        window.location.href = "/";
+    });
+}
+
+function initFilters() {
+    const applyBtn = document.getElementById("applyFiltersHr");
+    const resetBtn = document.getElementById("resetFiltersHr");
+    const skillMatrixFilter = document.getElementById("skillMatrixFilter");
+
+    applyBtn?.addEventListener("click", () => {
+        currentDepartment = document.getElementById("departmentFilterHr")?.value || "all";
+        currentCategory = document.getElementById("categoryFilterHr")?.value || "all";
+        currentLevel = document.getElementById("levelFilterHr")?.value || "all";
+        renderDashboard();
+    });
+
+    resetBtn?.addEventListener("click", () => {
+        currentDepartment = "all";
+        currentCategory = "all";
+        currentLevel = "all";
+        currentSkillId = "all";
+
+        document.getElementById("departmentFilterHr").value = "all";
+        document.getElementById("categoryFilterHr").value = "all";
+        document.getElementById("levelFilterHr").value = "all";
+        document.getElementById("skillMatrixFilter").value = "all";
+
+        renderDashboard();
+    });
+
+    skillMatrixFilter?.addEventListener("change", () => {
+        currentSkillId = skillMatrixFilter.value;
+        renderDepartmentMatrix();
+    });
+}
+
+function initActionButtons() {
+    document.getElementById("exportReportBtn")?.addEventListener("click", exportReport);
+
+    document.getElementById("createSurveyBtn")?.addEventListener("click", () => {
+        alert("Создание опроса пока в разработке");
+    });
+}
+
+function renderFilters() {
+    const departmentFilter = document.getElementById("departmentFilterHr");
+    const categoryFilter = document.getElementById("categoryFilterHr");
+    const skillMatrixFilter = document.getElementById("skillMatrixFilter");
+
+    if (departmentFilter) {
+        departmentFilter.innerHTML = `<option value="all">Все</option>`;
+
+        matrixData.departments.forEach((department) => {
+            const option = document.createElement("option");
+            option.value = department;
+            option.textContent = department;
+            departmentFilter.appendChild(option);
         });
     }
-    
-    if (profileBtn) {
-        profileBtn.addEventListener("click", function() { window.navigateTo('/profile'); });
-    }
-    
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", function() {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            window.navigateTo('/');
+
+    if (categoryFilter) {
+        const categories = [...new Set(
+            matrixData.skills
+                .map((skill) => skill.category)
+                .filter(Boolean)
+        )].sort();
+
+        categoryFilter.innerHTML = `<option value="all">Все</option>`;
+
+        categories.forEach((category) => {
+            const option = document.createElement("option");
+            option.value = category;
+            option.textContent = category;
+            categoryFilter.appendChild(option);
         });
     }
-    // ========== ТОП-10 НАВЫКОВ (горизонтальные шкалы) ==========
-function renderTopSkills() {
+
+    if (skillMatrixFilter) {
+        skillMatrixFilter.innerHTML = `<option value="all">Все навыки</option>`;
+
+        matrixData.skills.forEach((skill) => {
+            const option = document.createElement("option");
+            option.value = skill.id;
+            option.textContent = skill.category
+                ? `${skill.name} (${skill.category})`
+                : skill.name;
+
+            skillMatrixFilter.appendChild(option);
+        });
+    }
+}
+
+function getFilteredEmployees() {
+    let employees = [...matrixData.employees];
+
+    if (currentDepartment !== "all") {
+        employees = employees.filter((employee) => employee.department === currentDepartment);
+    }
+
+    if (currentLevel !== "all") {
+        const apiLevel = UI_LEVEL_TO_API[currentLevel];
+
+        employees = employees.filter((employee) => {
+            return (employee.skills || []).some((skill) => skill.level === apiLevel);
+        });
+    }
+
+    if (currentCategory !== "all") {
+        employees = employees.filter((employee) => {
+            return (employee.skills || []).some((skill) => skill.skillCategory === currentCategory);
+        });
+    }
+
+    return employees;
+}
+
+function getFilteredSkills() {
+    let skills = [...matrixData.skills];
+
+    if (currentCategory !== "all") {
+        skills = skills.filter((skill) => skill.category === currentCategory);
+    }
+
+    if (currentSkillId !== "all") {
+        skills = skills.filter((skill) => String(skill.id) === String(currentSkillId));
+    }
+
+    return skills;
+}
+
+function renderDashboard() {
+    const employees = getFilteredEmployees();
+    const skills = getFilteredSkills();
+
+    document.getElementById("hrEmployeesCount").textContent = employees.length;
+    document.getElementById("hrSkillsCount").textContent = matrixData.skills.length;
+
+    const activeProfiles = employees.length === 0
+        ? 0
+        : Math.round(
+            (
+                employees.filter((employee) => (employee.skills || []).length > 0).length /
+                employees.length
+            ) * 100
+        );
+
+    document.getElementById("hrActiveProfiles").textContent = `${activeProfiles}%`;
+
+    renderTopSkills(employees);
+    renderRareSkills(employees);
+    renderGapSkills(employees);
+    renderDepartmentMatrix(employees, skills);
+}
+
+function countSkills(employees) {
+    const map = new Map();
+
+    employees.forEach((employee) => {
+        (employee.skills || []).forEach((skill) => {
+            const key = skill.skillId;
+
+            const existing = map.get(key) || {
+                skillId: skill.skillId,
+                name: skill.skillName,
+                category: skill.skillCategory,
+                count: 0,
+                senior: 0,
+                middle: 0,
+                junior: 0,
+                intern: 0,
+            };
+
+            existing.count += 1;
+
+            if (skill.level === "Senior") existing.senior += 1;
+            if (skill.level === "Middle") existing.middle += 1;
+            if (skill.level === "Junior") existing.junior += 1;
+            if (skill.level === "Intern") existing.intern += 1;
+
+            map.set(key, existing);
+        });
+    });
+
+    return [...map.values()];
+}
+
+function renderTopSkills(employees) {
     const container = document.getElementById("topSkillsList");
     if (!container) return;
-    
-    let html = "";
-    for (let i = 0; i < topSkillsData.length; i++) {
-        const skill = topSkillsData[i];
-        const barWidth = skill.percentage;
-        html += `
+
+    const topSkills = countSkills(employees)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10);
+
+    if (topSkills.length === 0) {
+        container.innerHTML = "Нет данных";
+        return;
+    }
+
+    const maxCount = Math.max(...topSkills.map((skill) => skill.count), 1);
+
+    container.innerHTML = topSkills.map((skill, index) => {
+        const width = Math.round((skill.count / maxCount) * 100);
+
+        return `
             <div class="hr-top-skill-item">
-                <div class="hr-top-skill-rank">${i + 1 + "."}</div>
+                <div class="hr-top-skill-rank">${index + 1}.</div>
+
                 <div class="hr-top-skill-info">
                     <div class="hr-top-skill-bar-container">
-                        <div class="hr-top-skill-bar" style="width: ${barWidth}%">
-                            <div class="hr-top-skill-name">${skill.name}</div>
+                        <div class="hr-top-skill-bar" style="width: ${width}%">
+                            <div class="hr-top-skill-name">${escapeHtml(skill.name)}</div>
                         </div>
+
                         <span class="hr-top-skill-count">${skill.count}</span>
                     </div>
                 </div>
             </div>
         `;
-    }
-    container.innerHTML = html;
+    }).join("");
 }
-// ========== ТОП-5 РЕДКИХ НАВЫКОВ ==========
-function renderRareSkills() {
+
+function renderRareSkills(employees) {
     const container = document.getElementById("rareSkillsList");
     if (!container) return;
-    
-    let html = "";
-    for (let i = 0; i < rareSkillsData.length; i++) {
-        const skill = rareSkillsData[i];
-        html += `
+
+    const rareSkills = countSkills(employees)
+        .sort((a, b) => a.count - b.count)
+        .slice(0, 5);
+
+    if (rareSkills.length === 0) {
+        container.innerHTML = "Нет данных";
+        return;
+    }
+
+    container.innerHTML = rareSkills.map((skill, index) => {
+        return `
             <div class="hr-rare-skill-item">
-                <div class="hr-rare-skill-rank">${i + 1}</div>
+                <div class="hr-rare-skill-rank">${index + 1}</div>
+
                 <div class="hr-rare-skill-info">
-                    <div class="hr-rare-skill-name">${skill.name}</div>
+                    <div class="hr-rare-skill-name">${escapeHtml(skill.name)} — ${skill.count}</div>
                     <div class="hr-rare-skill-line"></div>
                 </div>
             </div>
         `;
-    }
-    container.innerHTML = html;
+    }).join("");
 }
-    
-    // ========== ОТРИСОВКА КВАДРАТИКОВ ==========
-    function renderSkillSquare(level) {
-        if (!level || level === "novice") return '<div class="hr-skill-square empty"></div>';
-        let color = "";
-        switch(level) {
-            case "expert": color = "#F2ACAC"; break;
-            case "advanced": color = "#EDC9AD"; break;
-            case "experienced": color = "#F4F3B5"; break;
-            default: color = "#C0E6BCC7";
+
+function renderGapSkills(employees) {
+    const container = document.getElementById("gapSkillsList");
+    if (!container) return;
+
+    const gapSkills = countSkills(employees)
+        .map((skill) => ({
+            ...skill,
+            gap: skill.intern + skill.junior - skill.senior,
+        }))
+        .sort((a, b) => b.gap - a.gap)
+        .slice(0, 5);
+
+    if (gapSkills.length === 0) {
+        container.innerHTML = "Нет данных";
+        return;
+    }
+
+    container.innerHTML = gapSkills.map((skill) => {
+        const deficitClass = skill.gap >= 5 ? "high" : "medium";
+        const deficitText = skill.gap >= 5 ? "высокий" : "средний";
+
+        return `
+            <div class="hr-gap-item">
+                <div class="hr-gap-name">⚠️ ${escapeHtml(skill.name)}</div>
+
+                <div class="hr-gap-stats">
+                    <span>Новичков: ${skill.intern + skill.junior}</span>
+                    <span>Экспертов: ${skill.senior}</span>
+                </div>
+
+                <div class="hr-gap-deficit ${deficitClass}">
+                    Дефицит: ${deficitText}
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+function getBestLevelForDepartment(departmentEmployees, skillId) {
+    const priority = {
+        Senior: 4,
+        Middle: 3,
+        Junior: 2,
+        Intern: 1,
+    };
+
+    let bestLevel = null;
+    let bestScore = 0;
+
+    departmentEmployees.forEach((employee) => {
+        const userSkill = (employee.skills || []).find((skill) => skill.skillId === skillId);
+
+        if (userSkill && priority[userSkill.level] > bestScore) {
+            bestScore = priority[userSkill.level];
+            bestLevel = userSkill.level;
         }
-        return `<div class="hr-skill-square" style="background-color: ${color}"></div>`;
+    });
+
+    return bestLevel;
+}
+
+function renderDepartmentMatrix(
+    employees = getFilteredEmployees(),
+    skills = getFilteredSkills()
+) {
+    const head = document.getElementById("departmentMatrixHead");
+    const body = document.getElementById("departmentMatrixBody");
+
+    if (!head || !body) return;
+
+    const departments = [...new Set(
+        employees
+            .map((employee) => employee.department)
+            .filter(Boolean)
+    )].sort();
+
+    const shownSkills = skills.slice(0, currentSkillId === "all" ? 8 : skills.length);
+
+    head.innerHTML = `
+        <tr>
+            <th class="hr-employee-col">Отдел</th>
+            ${shownSkills.map((skill) => `<th>${escapeHtml(skill.name)}</th>`).join("")}
+        </tr>
+    `;
+
+    if (departments.length === 0 || shownSkills.length === 0) {
+        body.innerHTML = `
+            <tr>
+                <td colspan="${shownSkills.length + 1}">Нет данных</td>
+            </tr>
+        `;
+        return;
     }
-    
-    function renderDepartmentMatrix() {
-        const tbody = document.getElementById("departmentMatrixBody");
-        if (!tbody) return;
-        
-        let html = "";
-        for (let dept of departmentMatrixData) {
-            html += `
-                <tr>
-                    <td class="hr-employee-name">${dept.name}</td>
-                    <td>${renderSkillSquare(dept.skills.python)}</td>
-                    <td>${renderSkillSquare(dept.skills.kotlin)}</td>
-                    <td>${renderSkillSquare(dept.skills.csharp)}</td>
-                    <td>${renderSkillSquare(dept.skills.golang)}</td>
-                </tr>
-            `;
-        }
-        tbody.innerHTML = html;
+
+    body.innerHTML = departments.map((department) => {
+        const departmentEmployees = employees.filter((employee) => employee.department === department);
+
+        return `
+            <tr>
+                <td class="hr-employee-name">${escapeHtml(department)}</td>
+
+                ${shownSkills.map((skill) => {
+                    const level = getBestLevelForDepartment(departmentEmployees, skill.id);
+                    return `<td>${renderSkillSquare(level)}</td>`;
+                }).join("")}
+            </tr>
+        `;
+    }).join("");
+}
+
+function renderSkillSquare(level) {
+    if (!level) {
+        return `<div class="hr-skill-square empty" title="Нет навыка"></div>`;
     }
-    
-    renderDepartmentMatrix();
-    renderTopSkills();
-    renderRareSkills();
-    
-    // ========== ФИЛЬТРЫ ==========
-    const applyBtn = document.getElementById("applyFiltersHr");
-    const resetBtn = document.getElementById("resetFiltersHr");
-    
-    if (applyBtn) {
-        applyBtn.addEventListener("click", function() { console.log("Фильтры применены"); });
-    }
-    
-    if (resetBtn) {
-        resetBtn.addEventListener("click", function() {
-            const deptFilter = document.getElementById("departmentFilterHr");
-            const catFilter = document.getElementById("categoryFilterHr");
-            const levelFilter = document.getElementById("levelFilterHr");
-            if (deptFilter) deptFilter.value = "all";
-            if (catFilter) catFilter.value = "all";
-            if (levelFilter) levelFilter.value = "all";
-            console.log("Фильтры сброшены");
-        });
-    }
-    
-    // Фильтр матрицы
-    const skillMatrixFilter = document.getElementById("skillMatrixFilter");
-    if (skillMatrixFilter) {
-        skillMatrixFilter.addEventListener("change", function() { console.log("Фильтр матрицы:", this.value); });
-    }
-    
-    // Кнопки
-    const exportBtn = document.getElementById("exportReportBtn");
-    const surveyBtn = document.getElementById("createSurveyBtn");
-    
-    if (exportBtn) exportBtn.addEventListener("click", function() { alert("Экспорт отчета в разработке"); });
-    if (surveyBtn) surveyBtn.addEventListener("click", function() { alert("Создание опроса в разработке"); });
+
+    const color = LEVEL_COLORS[level] || "#C0E6BCC7";
+    const title = LEVEL_TO_UI[level] || level;
+
+    return `
+        <div
+            class="hr-skill-square"
+            style="background-color: ${color}"
+            title="${escapeHtml(title)}"
+        ></div>
+    `;
+}
+
+function exportReport() {
+    const employees = getFilteredEmployees();
+
+    const rows = [
+        ["ФИО", "Отдел", "Должность", "Роль", "Навыки"],
+        ...employees.map((employee) => [
+            employee.fullName,
+            employee.department,
+            employee.position,
+            employee.role,
+            (employee.skills || [])
+                .map((skill) => `${skill.skillName}: ${LEVEL_TO_UI[skill.level] || skill.level}`)
+                .join("; "),
+        ]),
+    ];
+
+    const csv = rows
+        .map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(","))
+        .join("\n");
+
+    const blob = new Blob([csv], {
+        type: "text/csv;charset=utf-8;",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "skillmap-report.csv";
+    link.click();
+
+    URL.revokeObjectURL(url);
+}
+
+function showHrError(message) {
+    const app = document.getElementById("app");
+    if (!app) return;
+
+    app.innerHTML = `
+        <div style="padding: 40px; font-family: Arial, sans-serif;">
+            <h2>Ошибка</h2>
+            <p>${escapeHtml(message)}</p>
+            <button id="goBackBtn">Вернуться</button>
+        </div>
+    `;
+
+    document.getElementById("goBackBtn")?.addEventListener("click", () => {
+        window.location.href = "/";
+    });
 }
